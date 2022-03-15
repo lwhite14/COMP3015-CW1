@@ -6,12 +6,19 @@
 #include <glad/glad.h>
 #include "helper/glslprogram.h"
 
+#include "helper/torus.h"
+#include "helper/teapot.h"
+#include <glm/glm.hpp>
+
 class SceneBasic_Uniform : public Scene
 {
 private:
-    GLuint vaoHandle;
     GLSLProgram prog;
-    float angle;
+    
+    Torus torus;
+    //Teapot teapot;
+
+    void setMatrices();
 
     void compile();
 
