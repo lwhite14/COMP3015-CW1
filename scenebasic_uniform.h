@@ -6,7 +6,9 @@
 #include <glad/glad.h>
 #include "helper/glslprogram.h"
 
-#include "helper/torus.h"
+//#include "helper/torus.h"
+#include "helper/plane.h"
+#include "helper/objmesh.h"
 #include "helper/teapot.h"
 #include <glm/glm.hpp>
 
@@ -15,8 +17,11 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram prog;
     
-    Torus torus;
+    //Torus torus;
     //Teapot teapot;
+    Plane plane; //plane surface
+    std::unique_ptr<ObjMesh> mesh; //pig mesh
+
 
     void setMatrices();
 
