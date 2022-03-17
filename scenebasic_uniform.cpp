@@ -26,23 +26,13 @@ void SceneBasic_Uniform::initScene()
 
     view = glm::lookAt(vec3(0.5f, 0.75f, 0.75f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
     projection = mat4(1.0f);
-    float x, z;
-    for (int i = 0; i < 3; i++)
-    {
-        std::stringstream name;
-        name << "lights[" << i << "].Position";
-        x = 2.0f * cosf((glm::two_pi<float>() / 3) * i);
-        z = 2.0f * sinf((glm::two_pi<float>() / 3) * i);
-        prog.setUniform(name.str().c_str(), view * glm::vec4(x, 1.2f, z + 1.0f, 1.0f));
-    }
 
-    prog.setUniform("lights[0].L", vec3(0.0f, 0.0f, 0.8f));
-    prog.setUniform("lights[1].L", vec3(0.0f, 0.8f, 0.0f));
-    prog.setUniform("lights[2].L", vec3(0.8f, 0.0f, 0.0f));
-
-    prog.setUniform("lights[0].La", vec3(0.0f, 0.0f, 1.0f));
-    prog.setUniform("lights[1].La", vec3(0.0f, 1.0f, 0.0f));
-    prog.setUniform("lights[2].La", vec3(1.0f, 0.0f, 0.0f));
+    float x = 2.0f * cosf((glm::two_pi<float>() / 3) * 0);
+    float z = 2.0f * sinf((glm::two_pi<float>() / 3) * 0);
+    prog.setUniform("Light.Position", view * glm::vec4(x, 1.2f, z + 1.0f, 1.0f));
+    prog.setUniform("Light.La", vec3(1.0f, 1.0f, 0.0f));
+    prog.setUniform("Light.Ld", vec3(1.0f, 0.8f, 1.0f));
+    prog.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
 }
 
 void SceneBasic_Uniform::compile()

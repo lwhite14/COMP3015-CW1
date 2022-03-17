@@ -1,14 +1,50 @@
 #version 460
 
-//in variable that receives the diffuse calculation from the vertex shader
-in vec3 Colour;
+in vec3 Position;
+in vec3 Normal;
 
-//out variable, this typical for all fragment shaders
-layout (location = 0) out vec4 FragColor;
+layout( location = 0 ) out vec4 FragColor;
+
+ //light information struct
+uniform struct LightInfo 
+{
+	vec4 Position;	// Light position in eye coords.
+	vec3 La;		// Ambient light intensity
+	vec3 Ld;			// Specular light intensity
+	vec3 Ls;			// Diffuse light intensity
+} Light;
+
+//material information struct
+uniform struct MaterialInfo 
+{
+	vec3 Ka;			// Ambient reflectivity
+	vec3 Kd;			// Diffuse reflectivity
+	vec3 Ks;			// Specular reflectivity
+	float Shininess;	// Specular shininess factor
+} Material;
+
+vec3 phongModel( vec3 position, vec3 normal ) 
+{
+	//calculate ambient here, to access each light La value use this:
+	vec3 ambient = Material.Ka * Light.La;
+
+	//calculate diffuse here
+	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
+	float sDotN = max( dot(s,normal), 0.0 );
+	vec3 diffuse = Material.Kd * Light.Ld * sDotN;
+
+	//calculate specular here
+	vec3 spec = vec3(0.0);
+	if( sDotN > 0.0 )
+	{
+		vec3 v = normalize(-position.xyz);
+		vec3 r = reflect( -s, normal );
+		spec = Material.Ks * Light.Ls * pow( max( dot(r,v), 0.0 ), Material.Shininess );
+	}
+	return ambient + diffuse + spec;
+}
 
 void main()
 {
-    //we pass LightInyensity to outr FragColor, notice the difference between vector types
-    // vec3 and vec4 and how we solved the problem
-    FragColor = vec4(Colour, 1.0);
+	FragColor = vec4(phongModel(Position, normalize(Normal)), 1);
 }
