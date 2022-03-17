@@ -23,7 +23,7 @@ uniform struct MaterialInfo
 	float Shininess;	// Specular shininess factor
 } Material;
 
-vec3 phongModel( vec3 position, vec3 normal ) 
+vec3 blinnPhong( vec3 position, vec3 normal ) 
 {
 	//calculate ambient here, to access each light La value use this:
 	vec3 ambient = Material.Ka * Light.La;
@@ -38,13 +38,13 @@ vec3 phongModel( vec3 position, vec3 normal )
 	if( sDotN > 0.0 )
 	{
 		vec3 v = normalize(-position.xyz);
-		vec3 r = reflect( -s, normal );
-		spec = Material.Ks * Light.Ls * pow( max( dot(r,v), 0.0 ), Material.Shininess );
+		vec3 h = normalize( v + s ); 
+		spec = Material.Ks * pow( max( dot(h,normal), 0.0 ), Material.Shininess );
 	}
 	return ambient + diffuse + spec;
 }
 
 void main()
 {
-	FragColor = vec4(phongModel(Position, normalize(Normal)), 1);
+	FragColor = vec4(blinnPhong(Position, normalize(Normal)), 1.0f);
 }
