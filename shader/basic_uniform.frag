@@ -2,6 +2,7 @@
 
 in vec3 Position;
 in vec3 Normal;
+in vec2 TexCoord;
 
 layout( location = 0 ) out vec4 FragColor;
 
@@ -23,19 +24,19 @@ uniform struct MaterialInfo
 	float Shininess;	// Specular shininess factor
 } Material;
 
-const int levels = 4;
-const float scaleFactor = 1.0 / levels;
+layout(binding=0) uniform sampler2D Tex1;
 
 vec3 blinnPhong( vec3 position, vec3 normal ) 
 {
+	vec3 texColor = texture(Tex1, TexCoord).rgb;
+
 	//calculate ambient here, to access each light La value use this:
-	vec3 ambient = Material.Ka * Light.La;
+	vec3 ambient = Material.Ka * Light.La * texColor;
 
 	//calculate diffuse here
 	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
 	float sDotN = max( dot(s,normal), 0.0 );
-	vec3 diffuse = Material.Kd * floor( sDotN * levels ) * scaleFactor;
-	//vec3 diffuse = Material.Kd * Light.Ld * sDotN;
+	vec3 diffuse = Material.Kd * Light.Ld * sDotN * texColor;
 
 	//calculate specular here
 	vec3 spec = vec3(0.0);

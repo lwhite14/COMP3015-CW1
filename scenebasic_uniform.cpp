@@ -9,23 +9,18 @@ using std::endl;
 using glm::vec3;
 using glm::mat4;
 
-//constructor for torus
-SceneBasic_Uniform::SceneBasic_Uniform() : plane(10.0f, 10.0f, 100, 100)
-{
-    mesh = ObjMesh::load("../COMP3015-CW1/media/pig_triangulated.obj", true);
-}
+#include "helper/texture.h"
 
-
-//constructor for teapot
-//SceneBasic_Uniform::SceneBasic_Uniform() : teapot(13, glm::translate(mat4(1.0f), vec3(0.0f, 1.5f, 0.25f))) {}
+SceneBasic_Uniform::SceneBasic_Uniform() : cube(1.25f) { }
 
 void SceneBasic_Uniform::initScene()
 {
     compile();
     glEnable(GL_DEPTH_TEST);
 
-    view = glm::lookAt(vec3(0.5f, 0.75f, 0.75f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+    view = glm::lookAt(vec3(1.0f, 1.25f, 1.25f), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
     projection = mat4(1.0f);
+
 
     float x = 2.0f * cosf((glm::two_pi<float>() / 3) * 0);
     float z = 2.0f * sinf((glm::two_pi<float>() / 3) * 0);
@@ -33,6 +28,10 @@ void SceneBasic_Uniform::initScene()
     prog.setUniform("Light.La", vec3(1.0f, 1.0f, 0.0f));
     prog.setUniform("Light.Ld", vec3(1.0f, 0.8f, 1.0f));
     prog.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
+
+    GLuint texID = Texture::loadTexture("../COMP3015-CW1/media/texture/brick1.jpg");
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texID);
 }
 
 void SceneBasic_Uniform::compile()
@@ -59,22 +58,15 @@ void SceneBasic_Uniform::update(float t)
 void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    prog.setUniform("Material.Kd", 0.4f, 0.4f, 0.4f);
-    prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
-    prog.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
-    prog.setUniform("Material.Shininess", 180.0f);
-    model = mat4(1.0f);
-    model = glm::rotate(model, glm::radians(90.0f), vec3(0.0f, 1.0f, 0.0f));
-    setMatrices();
-    mesh->render();
+
     prog.setUniform("Material.Kd", 0.1f, 0.1f, 0.1f);
-    prog.setUniform("Material.Ks", 0.9f, 0.9f, 0.9f);
-    prog.setUniform("Material.Ka", 0.1f, 0.1f, 0.1f);
+    prog.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
+    prog.setUniform("Material.Ka", 0.3f, 0.3f, 0.3f);
     prog.setUniform("Material.Shininess", 180.0f);
     model = mat4(1.0f);
     model = glm::translate(model, vec3(0.0f, -0.45f, 0.0f));
     setMatrices();
-    plane.render();
+    cube.render();
 }
 
 void SceneBasic_Uniform::setMatrices()
