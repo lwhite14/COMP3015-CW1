@@ -24,19 +24,22 @@ uniform struct MaterialInfo
 	float Shininess;	// Specular shininess factor
 } Material;
 
-layout(binding=0) uniform sampler2D Tex1;
+layout(binding=0) uniform sampler2D BrickTex;
+layout(binding=1) uniform sampler2D MossTex;
 
 vec3 blinnPhong( vec3 position, vec3 normal ) 
 {
-	vec3 texColor = texture(Tex1, TexCoord).rgb;
+	vec3 texColorBrick = texture(BrickTex, TexCoord).rgb;
+	vec4 texColorMoss= texture(MossTex, TexCoord).rgba;
+	vec3 col = mix(texColorBrick.rgb, texColorMoss.rgb, texColorMoss.a);
 
 	//calculate ambient here, to access each light La value use this:
-	vec3 ambient = Material.Ka * Light.La * texColor;
+	vec3 ambient = Material.Ka * Light.La * col;
 
 	//calculate diffuse here
 	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
 	float sDotN = max( dot(s,normal), 0.0 );
-	vec3 diffuse = Material.Kd * Light.Ld * sDotN * texColor;
+	vec3 diffuse = Material.Kd * Light.Ld * sDotN * col;
 
 	//calculate specular here
 	vec3 spec = vec3(0.0);

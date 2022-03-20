@@ -25,13 +25,19 @@ void SceneBasic_Uniform::initScene()
     float x = 2.0f * cosf((glm::two_pi<float>() / 3) * 0);
     float z = 2.0f * sinf((glm::two_pi<float>() / 3) * 0);
     prog.setUniform("Light.Position", view * glm::vec4(x, 1.2f, z + 1.0f, 1.0f));
-    prog.setUniform("Light.La", vec3(1.0f, 1.0f, 0.0f));
-    prog.setUniform("Light.Ld", vec3(1.0f, 0.8f, 1.0f));
+    prog.setUniform("Light.La", vec3(0.2f, 0.2f, 0.2f));
+    prog.setUniform("Light.Ld", vec3(1.0f, 0.5f, 0.5f));
     prog.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
 
-    GLuint texID = Texture::loadTexture("../COMP3015-CW1/media/texture/brick1.jpg");
+    GLuint brick = Texture::loadTexture("../COMP3015-CW1/media/texture/brick1.jpg");
+    GLuint moss = Texture::loadTexture("../COMP3015-CW1/media/texture/moss.png");
+    // Load brick texture file into channel 0
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texID);
+    glBindTexture(GL_TEXTURE_2D, brick);
+    // Load moss texture file into channel 1
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, moss);
+
 }
 
 void SceneBasic_Uniform::compile()
@@ -59,9 +65,9 @@ void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    prog.setUniform("Material.Kd", 0.1f, 0.1f, 0.1f);
-    prog.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
     prog.setUniform("Material.Ka", 0.3f, 0.3f, 0.3f);
+    prog.setUniform("Material.Kd", 0.3f, 0.15f, 0.15f);
+    prog.setUniform("Material.Ks", 0.3f, 0.3f, 0.3f);
     prog.setUniform("Material.Shininess", 180.0f);
     model = mat4(1.0f);
     model = glm::translate(model, vec3(0.0f, -0.45f, 0.0f));
