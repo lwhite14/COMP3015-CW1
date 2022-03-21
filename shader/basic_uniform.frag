@@ -24,22 +24,20 @@ uniform struct MaterialInfo
 	float Shininess;	// Specular shininess factor
 } Material;
 
-layout(binding=0) uniform sampler2D BrickTex;
-layout(binding=1) uniform sampler2D MossTex;
+layout(binding=0) uniform sampler2D BaseTex;
+layout(binding=1) uniform sampler2D AlphaTex;
 
 vec3 blinnPhong( vec3 position, vec3 normal ) 
 {
-	vec3 texColorBrick = texture(BrickTex, TexCoord).rgb;
-	vec4 texColorMoss= texture(MossTex, TexCoord).rgba;
-	vec3 col = mix(texColorBrick.rgb, texColorMoss.rgb, texColorMoss.a);
+	vec3 texColor = texture(BaseTex, TexCoord).rgb;
 
 	//calculate ambient here, to access each light La value use this:
-	vec3 ambient = Material.Ka * Light.La * col;
+	vec3 ambient = Material.Ka * Light.La * texColor;
 
 	//calculate diffuse here
 	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
 	float sDotN = max( dot(s,normal), 0.0 );
-	vec3 diffuse = Material.Kd * Light.Ld * sDotN * col;
+	vec3 diffuse = Material.Kd * Light.Ld * sDotN * texColor;
 
 	//calculate specular here
 	vec3 spec = vec3(0.0);
@@ -54,5 +52,27 @@ vec3 blinnPhong( vec3 position, vec3 normal )
 
 void main()
 {
-	FragColor = vec4(blinnPhong(Position, normalize(Normal)), 1.0f);
+	vec4 alphaMap = texture(AlphaTex, TexCoord).rgba;
+	if (gl_FrontFacing)
+	{
+		if(alphaMap.a < 0.15 )
+		{
+			discard;
+		}
+		else
+		{
+			FragColor = vec4( blinnPhong(Position,normalize(Normal)), 1.0 );
+		}
+	}
+	else
+	{
+		if(alphaMap.a < 0.15 )
+		{
+			discard;
+		}
+		else
+		{
+			FragColor = vec4( blinnPhong(Position,normalize(-Normal)), 1.0 );
+		}
+	}
 }

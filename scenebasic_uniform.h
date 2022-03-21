@@ -17,7 +17,8 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram prog;
     //Plane plane;
-    Cube cube;
+    //Cube cube;
+    Teapot teapot;
     //std::unique_ptr<ObjMesh> mesh;
 
 
