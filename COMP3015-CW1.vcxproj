@@ -189,6 +189,7 @@
     <None Include="shader\basic_uniform.vert" />
     <None Include="shader\edge_detection.frag" />
     <None Include="shader\edge_detection.vert" />
+    <None Include="shader\gaussian_blur.frag" />
     <None Include="shader\skybox.frag" />
     <None Include="shader\skybox.vert" />
   </ItemGroup>
