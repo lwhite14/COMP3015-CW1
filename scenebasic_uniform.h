@@ -11,6 +11,7 @@
 #include "helper/teapot.h"
 #include <glm/glm.hpp>
 #include "helper/cube.h"
+#include "helper/skybox.h"
 
 class SceneBasic_Uniform : public Scene
 {
@@ -21,12 +22,11 @@ private:
     //Teapot teapot;
     //std::unique_ptr<ObjMesh> mesh;
     std::unique_ptr<ObjMesh> ogre;
-
+    SkyBox sky;
+    float angle, tPrev, rotSpeed;
 
     void setMatrices();
-
     void compile();
-
 public:
     SceneBasic_Uniform();
 
