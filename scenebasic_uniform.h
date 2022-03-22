@@ -12,21 +12,25 @@
 #include <glm/glm.hpp>
 #include "helper/cube.h"
 #include "helper/skybox.h"
+#include "helper/torus.h"
 
 class SceneBasic_Uniform : public Scene
 {
 private:
     GLSLProgram prog;
-    //Plane plane;
-    //Cube cube;
-    //Teapot teapot;
-    //std::unique_ptr<ObjMesh> mesh;
-    std::unique_ptr<ObjMesh> ogre;
-    SkyBox sky;
-    float angle, tPrev, rotSpeed;
 
+    GLuint fsQuad, fboHandle, renderTex;
+    Plane plane;
+    Torus torus;
+    Teapot teapot;
+    float angle;
+    float tPrev, rotSpeed;
     void setMatrices();
     void compile();
+    void setupFBO();
+    void pass1();
+    void pass2();
+
 public:
     SceneBasic_Uniform();
 
