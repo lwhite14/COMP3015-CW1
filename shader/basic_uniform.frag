@@ -1,8 +1,8 @@
 #version 460
 
-in vec3 Position;
-in vec3 Normal;
+in vec3 LightDir;
 in vec2 TexCoord;
+in vec3 ViewDir;
 
 layout( location = 0 ) out vec4 FragColor;
 
@@ -24,22 +24,16 @@ uniform struct MaterialInfo
 	float Shininess;	// Specular shininess factor
 } Material;
 
-layout(binding=0) uniform sampler2D BaseTex;
-layout(binding=1) uniform sampler2D AlphaTex;
+layout(binding=0) uniform sampler2D ColorTex;
+layout(binding=1) uniform sampler2D NormalMapTex;
 
 vec3 blinnPhong( vec3 position, vec3 normal ) 
 {
-	vec3 texColor = texture(BaseTex, TexCoord).rgb;
-
-	//calculate ambient here, to access each light La value use this:
+	vec3 texColor = texture(ColorTex, TexCoord).rgb;
 	vec3 ambient = Material.Ka * Light.La * texColor;
-
-	//calculate diffuse here
 	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
 	float sDotN = max( dot(s,normal), 0.0 );
 	vec3 diffuse = Material.Kd * Light.Ld * sDotN * texColor;
-
-	//calculate specular here
 	vec3 spec = vec3(0.0);
 	if( sDotN > 0.0 )
 	{
@@ -48,31 +42,15 @@ vec3 blinnPhong( vec3 position, vec3 normal )
 		spec = Material.Ks * pow( max( dot(h,normal), 0.0 ), Material.Shininess );
 	}
 	return ambient + diffuse + spec;
+
 }
 
 void main()
 {
-	vec4 alphaMap = texture(AlphaTex, TexCoord).rgba;
-	if (gl_FrontFacing)
-	{
-		if(alphaMap.a < 0.15 )
-		{
-			discard;
-		}
-		else
-		{
-			FragColor = vec4( blinnPhong(Position,normalize(Normal)), 1.0 );
-		}
-	}
-	else
-	{
-		if(alphaMap.a < 0.15 )
-		{
-			discard;
-		}
-		else
-		{
-			FragColor = vec4( blinnPhong(Position,normalize(-Normal)), 1.0 );
-		}
-	}
+	// Unpack the normal and set it to a range between 0 and 1
+	vec3 norm = texture(NormalMapTex, TexCoord).xyz;
+	norm.xy = 2.0 * norm.xy - 1.0;
+
+	FragColor = vec4 ( blinnPhong(ViewDir, norm), 1.0f );
+
 }

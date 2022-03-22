@@ -18,8 +18,9 @@ private:
     GLSLProgram prog;
     //Plane plane;
     //Cube cube;
-    Teapot teapot;
+    //Teapot teapot;
     //std::unique_ptr<ObjMesh> mesh;
+    std::unique_ptr<ObjMesh> ogre;
 
 
     void setMatrices();
