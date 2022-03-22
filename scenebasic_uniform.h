@@ -13,27 +13,27 @@
 #include "helper/cube.h"
 #include "helper/skybox.h"
 #include "helper/torus.h"
+#include "helper/sphere.h"
 
 class SceneBasic_Uniform : public Scene
 {
 private:
     GLSLProgram prog;
 
-    GLuint fsQuad;
-    GLuint renderFBO, intermediateFBO;
-    GLuint renderTex, intermediateTex;
+    GLuint hdrFBO;
+    GLuint quad;
+    GLuint hdrTex, avgTex;
     Plane plane;
-    Torus torus;
+    Sphere sphere;
     Teapot teapot;
-    float angle;
-    float tPrev, rotSpeed;
     void setMatrices();
     void compile();
     void setupFBO();
     void pass1();
     void pass2();
-    void pass3();
-    float gauss(float, float);
+    void computeLogAveLuminance();
+    void drawScene();
+
 public:
     SceneBasic_Uniform();
 

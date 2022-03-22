@@ -190,6 +190,7 @@
     <None Include="shader\edge_detection.frag" />
     <None Include="shader\edge_detection.vert" />
     <None Include="shader\gaussian_blur.frag" />
+    <None Include="shader\hdr_tone_mapping.frag" />
     <None Include="shader\skybox.frag" />
     <None Include="shader\skybox.vert" />
   </ItemGroup>

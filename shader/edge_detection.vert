@@ -6,6 +6,7 @@ layout (location = 2) in vec2 VertexTexCoord;
 
 out vec3 Position;
 out vec3 Normal;
+out vec2 TexCoord;
 
 uniform mat3 NormalMatrix;
 uniform mat4 MVP;
@@ -17,6 +18,7 @@ void main()
 
 	Position = positionEye;
 	Normal = normalEye;
+	TexCoord = VertexTexCoord;
 
 	gl_Position = MVP * vec4(VertexPosition,1.0);
 }
