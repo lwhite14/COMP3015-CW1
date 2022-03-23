@@ -20,19 +20,13 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram prog;
 
-    GLuint hdrFBO;
-    GLuint quad;
-    GLuint hdrTex, avgTex;
-    Plane plane;
-    Sphere sphere;
-    Teapot teapot;
+    GLuint sprites;
+    int numSprites;
+    float* locations;
+
     void setMatrices();
+
     void compile();
-    void setupFBO();
-    void pass1();
-    void pass2();
-    void computeLogAveLuminance();
-    void drawScene();
 
 public:
     SceneBasic_Uniform();
