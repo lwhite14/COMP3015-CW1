@@ -20,9 +20,9 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram prog;
 
-    GLuint sprites;
-    int numSprites;
-    float* locations;
+    std::unique_ptr<ObjMesh> ogre;
+
+    glm::mat4 viewport;
 
     void setMatrices();
 

@@ -16,7 +16,7 @@ using glm::mat4;
 
 SceneBasic_Uniform::SceneBasic_Uniform() 
 {
-    
+    ogre = ObjMesh::load("../COMP3015-CW1/media/bs_ears.obj", false, true);
 }
 
 
@@ -28,42 +28,17 @@ void SceneBasic_Uniform::initScene()
 
     glEnable(GL_DEPTH_TEST);
 
-    numSprites = 50;
-    locations = new float[numSprites * 3];
-    srand((unsigned int)time(0));
+    float c = 1.5f;
+    projection = glm::ortho(-0.4f * c, 0.4f * c, -0.3f * c, 0.3f * c, 0.1f, 100.0f);
 
-    for (int i = 0; i < numSprites; i++) 
-    {
-        vec3 p(((float)rand() / RAND_MAX * 2.0f) - 1.0f,
-            ((float)rand() / RAND_MAX * 2.0f) - 1.0f,
-            ((float)rand() / RAND_MAX * 2.0f) - 1.0f);
-        locations[i * 3] = p.x;
-        locations[i * 3 + 1] = p.y;
-        locations[i * 3 + 2] = p.z;
-    }
-
-    GLuint handle;
-    glGenBuffers(1, &handle);
-
-    glBindBuffer(GL_ARRAY_BUFFER, handle);
-    glBufferData(GL_ARRAY_BUFFER, numSprites * 3 * sizeof(float), locations, GL_STATIC_DRAW);
-
-    delete[] locations;
-
-    glGenVertexArrays(1, &sprites);
-    glBindVertexArray(sprites);
-
-    glBindBuffer(GL_ARRAY_BUFFER, handle);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, ((GLubyte*)NULL + (0)));
-    glEnableVertexAttribArray(0);
-
-    glBindVertexArray(0);
-
-    const char* texName = "../COMP3015-CW1/media/texture/flower.png";
-    Texture::loadTexture(texName);
-
-    prog.setUniform("SpriteTex", 0);
-    prog.setUniform("Size2", 0.15f);
+    prog.setUniform("Line.Width", 0.75f);
+    prog.setUniform("Line.Color", vec4(0.05f, 0.0f, 0.05f, 1.0f));
+    prog.setUniform("Light.Intensity", 1.0f, 1.0f, 1.0f);
+    prog.setUniform("Light.Position", vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    prog.setUniform("Material.Kd", 0.7f, 0.7f, 0.7f);
+    prog.setUniform("Material.Ka", 0.2f, 0.2f, 0.2f);
+    prog.setUniform("Material.Ks", 0.8f, 0.8f, 0.8f);
+    prog.setUniform("Material.Shininess", 100.0f);
 }
 
 
@@ -71,9 +46,9 @@ void SceneBasic_Uniform::compile()
 {
     try
     {
-        prog.compileShader("shader/point_sprite.vert");
-        prog.compileShader("shader/point_sprite.frag");
-        prog.compileShader("shader/point_sprite.geom");
+        prog.compileShader("shader/wireframe.vert");
+        prog.compileShader("shader/wireframe.frag");
+        prog.compileShader("shader/wireframe.geom");
         prog.link();
         prog.use();
     }
@@ -101,9 +76,7 @@ void SceneBasic_Uniform::render()
 
     model = mat4(1.0f);
     setMatrices();
-
-    glBindVertexArray(sprites);
-    glDrawArrays(GL_POINTS, 0, numSprites);
+    ogre->render();
 
     glFinish();
 }
@@ -112,14 +85,20 @@ void SceneBasic_Uniform::render()
 void SceneBasic_Uniform::setMatrices()
 {
     mat4 mv = view * model; //we create a model view matrix
-    prog.setUniform("ModelViewMatrix", mv); //set the uniform for the model view matrix
-    prog.setUniform("ProjectionMatrix", projection); //we set the model view matrix by multiplying the mv with the projection matrix
+    prog.setUniform("ModelViewMatrix", mv); 
+    prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2]))); 
+    prog.setUniform("MVP", mv * projection); 
+    prog.setUniform("ViewPortMatrix", viewport); 
 }
 
 void SceneBasic_Uniform::resize(int w, int h)
 {
     glViewport(0, 0, w, h);
-    width = w;
-    height = h;
-    projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
+    float w2 = w / 2.0f;
+    float h2 = h / 2.0f;
+    //projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
+    viewport = mat4(vec4(w2, 0.0f, 0.0f, 0.0f),
+        vec4(0.0f, h2, 0.0f, 0.0f),
+        vec4(0.0f, 0.0f, 1.0f, 0.0f),
+        vec4(w2 + 0, h2 + 0, 0.0f, 1.0f));
 }

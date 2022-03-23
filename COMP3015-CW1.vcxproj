@@ -196,6 +196,9 @@
     <None Include="shader\point_sprite.vert" />
     <None Include="shader\skybox.frag" />
     <None Include="shader\skybox.vert" />
+    <None Include="shader\wireframe.frag" />
+    <None Include="shader\wireframe.geom" />
+    <None Include="shader\wireframe.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
