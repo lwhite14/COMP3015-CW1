@@ -21,8 +21,7 @@ private:
     GLSLProgram prog;
 
     std::unique_ptr<ObjMesh> ogre;
-
-    glm::mat4 viewport;
+    float angle, tPrev, rotSpeed;
 
     void setMatrices();
 
