@@ -2,19 +2,19 @@
 
 struct LightInfo {
 	vec4 Position;
-	vec3 Intensity; // A, D, S Intensity
+	vec3 Intensity;
 };
 uniform LightInfo Light;
 
-struct MaterialInfo  {
-	vec3 Ka;			// Ambient reflectivity
-	vec3 Kd;			// Diffuse reflectivity
-	vec3 Ks;			// Specular reflectivity
-	float Shininess;	// Specular shininess factor
-}; 
+struct MaterialInfo {
+	vec3 Ka;
+	vec3 Kd;
+	vec3 Ks;
+	float Shininess;
+};
 uniform MaterialInfo Material;
 
-uniform struct LineInfo {
+uniform struct LineInfo{
 	float Width;
 	vec4 Color;
 } Line;
@@ -23,7 +23,7 @@ in vec3 GPosition;
 in vec3 GNormal;
 noperspective in vec3 GEdgeDistance;
 
-layout (location = 0) out vec4 FragColor;
+layout( location = 0 ) out vec4 FragColor;
 
 vec3 phongModel( vec3 position, vec3 normal ) 
 {
@@ -39,16 +39,14 @@ vec3 phongModel( vec3 position, vec3 normal )
 		spec = Material.Ks * pow( max( dot(h,normal), 0.0 ), Material.Shininess );
 	}
 	return ambient + diffuse + spec;
-
 }
 
 void main()
 {
-	vec4 color = vec4(phongModel (GPosition, GNormal), 1.0 );
-//	vec4 color = vec4(1.0, 0.0, 0.0, 1.0 );
+	vec4 color = vec4(phongModel(GPosition, GNormal), 1.0);
 
-	float d = min( GEdgeDistance.x, GEdgeDistance.y );
-	d = min( d, GEdgeDistance.z );
+	float d = min(GEdgeDistance.x, GEdgeDistance.y);
+	d = min(d, GEdgeDistance.z);
 
 	float mixVal;
 	if (d < Line.Width - 1)
@@ -65,5 +63,5 @@ void main()
 		mixVal = exp2(-2.0 * (x*x));
 	}
 
-	FragColor = mix( color, Line.Color, mixVal );
+	FragColor = mix(color, Line.Color, mixVal);
 }

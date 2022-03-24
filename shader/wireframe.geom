@@ -11,13 +11,13 @@ noperspective out vec3 GEdgeDistance;
 in vec3 VNormal[];
 in vec3 VPosition[];
 
-uniform mat4 ViewPortMatrix; 
+uniform mat4 ViewportMatrix;
 
 void main()
 {
-	vec2 p0 = vec2(ViewPortMatrix * (gl_in[0].gl_Position / gl_in[0].gl_Position.w));
-	vec2 p1 = vec2(ViewPortMatrix * (gl_in[1].gl_Position / gl_in[1].gl_Position.w));
-	vec2 p2 = vec2(ViewPortMatrix * (gl_in[2].gl_Position / gl_in[2].gl_Position.w));
+	vec2 p0 = vec2(ViewportMatrix * (gl_in[0].gl_Position / gl_in[0].gl_Position.w));
+	vec2 p1 = vec2(ViewportMatrix * (gl_in[1].gl_Position / gl_in[1].gl_Position.w));
+	vec2 p2 = vec2(ViewportMatrix * (gl_in[2].gl_Position / gl_in[2].gl_Position.w));
 
 	float a = length(p1 - p2);
 	float b = length(p2 - p0);
@@ -30,7 +30,7 @@ void main()
 	float hb = abs(c * sin(alpha));
 	float hc = abs(b * sin(alpha));
 
-	GEdgeDistance = vec3(ha, 0, 0);
+	GEdgeDistance = vec3 (ha, 0, 0);
 	GNormal = VNormal[0];
 	GPosition = VPosition[0];
 	gl_Position = gl_in[0].gl_Position;
@@ -44,7 +44,7 @@ void main()
 
 	GEdgeDistance = vec3(0, 0, hc);
 	GNormal = VNormal[2];
-	GPosition = VPosition[2];	
+	GPosition = VPosition[2];
 	gl_Position = gl_in[2].gl_Position;
 	EmitVertex();
 
