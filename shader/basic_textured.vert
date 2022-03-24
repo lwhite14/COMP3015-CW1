@@ -8,17 +8,15 @@ out vec3 Position;
 out vec3 Normal;
 out vec2 TexCoord;
 
+uniform mat4 ModelViewMatrix;
 uniform mat3 NormalMatrix;
+uniform mat4 ProjectionMatrix;
 uniform mat4 MVP;
 
-void main()
-{
-	vec3 positionEye = normalize( NormalMatrix * VertexPosition );
-	vec3 normalEye = normalize( NormalMatrix * VertexNormal );
-
-	Position = positionEye;
-	Normal = normalEye;
+void main() 
+{ 
+	Normal = normalize( NormalMatrix * VertexNormal);
+	Position = (ModelViewMatrix * vec4(VertexPosition,1.0)).xyz;
 	TexCoord = VertexTexCoord;
-
-	gl_Position = MVP * vec4(VertexPosition,1.0);
+	gl_Position = MVP * vec4(VertexPosition,1.0); 
 }
