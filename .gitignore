@@ -5,7 +5,6 @@
 *.slo
 *.lo
 *.o
-*.obj
 
 # Precompiled Headers
 *.gch
@@ -35,3 +34,6 @@
 /x64/
 /COMP3015-CW1.vcxproj.filters
 /COMP3015-CW1.vcxproj.user
+
+#Glad
+glad.c

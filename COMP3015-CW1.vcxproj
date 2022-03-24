@@ -78,8 +78,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Luker\Documents\OpenGLProjects\dependancies\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Luker\Documents\OpenGLProjects\dependancies\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Luker\Documents\OpenGLProjects\dependancies\include;C:\Users\lwhite14\Downloads\dependancies\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Luker\Documents\OpenGLProjects\dependancies\lib;C:\Users\lwhite14\Downloads\dependancies\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
