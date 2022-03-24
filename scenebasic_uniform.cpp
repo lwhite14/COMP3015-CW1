@@ -18,7 +18,7 @@ SceneBasic_Uniform::SceneBasic_Uniform() :  angle(0.0f),
                                             tPrev(0.0f), 
                                             rotSpeed(glm::pi<float>() / 8.0f)
 {
-    ogre = ObjMesh::load("../COMP3015-CW1/media/bs_ears.obj");
+    ogre = ObjMesh::loadWithAdjacency("../COMP3015-CW1/media/bs_ears.obj");
 }
 
 
