@@ -14,8 +14,9 @@ using glm::mat4;
 #include "helper/texture.h"
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() :  lightPosition(vec3(2.0, 2.0, -2.0)), 
-                                            sky(250.0f)
+SceneBasic_Uniform::SceneBasic_Uniform() :  lightPosition(vec3(2.0, 2.0, -2.0)),
+                                            sky(250.0f),
+                                            lightSource(0.5f)
 { 
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
 }
@@ -31,12 +32,6 @@ void SceneBasic_Uniform::initScene()
     GLuint skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
     GLuint ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
     GLuint ufoNormalTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_normal.png");
-
-
-    ufoProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
-    ufoProgram.setUniform("Light.La", vec3(0.4f, 0.4f, 0.45f));
-    ufoProgram.setUniform("Light.Ld", vec3(0.75f, 0.75f, 0.8f));
-    ufoProgram.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
 
     // Load texture file into channel 0
     glActiveTexture(GL_TEXTURE0);
@@ -63,6 +58,11 @@ void SceneBasic_Uniform::compile()
         ufoProgram.compileShader("shader/normal_map.frag");
         ufoProgram.link();
         ufoProgram.use();
+
+        basicProgram.compileShader("shader/basic.vert");
+        basicProgram.compileShader("shader/basic.frag");
+        basicProgram.link();
+        basicProgram.use();
     }
     catch (GLSLProgramException& e)
     {
@@ -91,6 +91,10 @@ void SceneBasic_Uniform::render()
     sky.render();
 
     ufoProgram.use();
+    ufoProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
+    ufoProgram.setUniform("Light.La", vec3(0.4f, 0.4f, 0.45f));
+    ufoProgram.setUniform("Light.Ld", vec3(0.75f, 0.75f, 0.8f));
+    ufoProgram.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
     ufoProgram.setUniform("Material.Kd", 0.5f, 0.5f, 0.5f);
     ufoProgram.setUniform("Material.Ks", 0.5f, 0.5f, 0.5f);
     ufoProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
@@ -99,6 +103,20 @@ void SceneBasic_Uniform::render()
     model = glm::translate(model, vec3(-30.0f, -40.0f, 0.0f));
     setMatrices(ufoProgram);
     ufo->render();
+
+    basicProgram.use();
+    ufoProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
+    ufoProgram.setUniform("Light.La", vec3(0.4f, 0.4f, 0.45f));
+    ufoProgram.setUniform("Light.Ld", vec3(0.75f, 0.75f, 0.8f));
+    ufoProgram.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
+    ufoProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
+    ufoProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
+    ufoProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
+    ufoProgram.setUniform("Material.Shininess", 0.0f);
+    model = mat4(1.0f);
+    model = glm::translate(model, lightPosition);
+    setMatrices(basicProgram);
+    lightSource.render();
 }
 
 void SceneBasic_Uniform::setMatrices(GLSLProgram& prog)

@@ -20,8 +20,10 @@ class SceneBasic_Uniform : public Scene
 private:
     GLSLProgram skyboxProgram;
     GLSLProgram ufoProgram;
+    GLSLProgram basicProgram;
     std::unique_ptr<ObjMesh> ufo;
     SkyBox sky;
+    Cube lightSource;
 
     glm::vec3 lightPosition;
 
