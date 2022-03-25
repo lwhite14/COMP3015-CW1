@@ -14,12 +14,10 @@ using glm::mat4;
 #include "helper/texture.h"
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() :  cube(1.25f),
-                                            light(0.1f),
-                                            lightPosition(vec3(3.0, -2.0, 5.0)),
+SceneBasic_Uniform::SceneBasic_Uniform() :  lightPosition(vec3(2.0, 2.0, -2.0)), 
                                             angle(0.0f), 
                                             tPrev(0.0f), 
-                                            rotSpeed(glm::pi<float>() / 4.0f), 
+                                            rotSpeed(glm::pi<float>() / 4.0f),
                                             sky(100.0f)
 { 
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
@@ -33,24 +31,27 @@ void SceneBasic_Uniform::initScene()
 
     projection = mat4(1.0f);
 
-    skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
-    cubeTex = Texture::loadTexture("../COMP3015-CW1/media/texture/metal.jpg");
-    ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
-    ufoNormalTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_normal.png");
+    GLuint skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
+    GLuint ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
+    GLuint ufoNormalTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_normal.png");
 
-    textureProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
-    textureProgram.setUniform("Light.La", vec3(0.15f, 0.15f, 0.2f));
-    textureProgram.setUniform("Light.Ld", vec3(0.45f, 0.45f, 0.5f));
-    textureProgram.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
 
+    ufoProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
+    ufoProgram.setUniform("Light.La", vec3(0.4f, 0.4f, 0.45f));
+    ufoProgram.setUniform("Light.Ld", vec3(0.75f, 0.75f, 0.8f));
+    ufoProgram.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
+
+    // Load texture file into channel 0
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, cubeTex);
-    glActiveTexture(GL_TEXTURE2);
+
+    // Load texture file into channel 0
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, ufoDiffuseTex);
-    glActiveTexture(GL_TEXTURE3);
+    // Load texture file into channel 1
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, ufoNormalTex);
+
 }
 
 void SceneBasic_Uniform::compile()
@@ -59,12 +60,13 @@ void SceneBasic_Uniform::compile()
     {
         skyboxProgram.compileShader("shader/skybox.vert");
         skyboxProgram.compileShader("shader/skybox.frag");
-        textureProgram.compileShader("shader/basic_textured.vert");
-        textureProgram.compileShader("shader/basic_textured.frag");
         skyboxProgram.link();
-        textureProgram.link();
         skyboxProgram.use();
-        textureProgram.use();
+
+        ufoProgram.compileShader("shader/normal_map.vert");
+        ufoProgram.compileShader("shader/normal_map.frag");
+        ufoProgram.link();
+        ufoProgram.use();
     }
     catch (GLSLProgramException& e)
     {
@@ -92,7 +94,7 @@ void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    vec3 cameraPos = vec3(7.0f * cos(angle), 2.0f, 7.0f * sin(angle));
+    vec3 cameraPos = vec3(20.0f * cos(angle), 2.0f, 20.0f * sin(angle));
     view = glm::lookAt(cameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
 
     skyboxProgram.use();
@@ -100,34 +102,14 @@ void SceneBasic_Uniform::render()
     setMatrices(skyboxProgram);
     sky.render();
 
-    textureProgram.use();
-    textureProgram.setUniform("Material.Kd", 0.65f, 0.65f, 0.65f);
-    textureProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-    textureProgram.setUniform("Material.Ka", 0.65f, 0.65f, 0.65f);
-    textureProgram.setUniform("Material.Shininess", 64.0f);
+    ufoProgram.use();
+    ufoProgram.setUniform("Material.Kd", 0.5f, 0.5f, 0.5f);
+    ufoProgram.setUniform("Material.Ks", 0.5f, 0.5f, 0.5f);
+    ufoProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
+    ufoProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
-    model = glm::translate(model, vec3(0.0f, -0.45f, 0.0f));
-    setMatrices(textureProgram);
-    cube.render();
-
-    textureProgram.use();
-    textureProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
-    textureProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-    textureProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
-    textureProgram.setUniform("Material.Shininess", 0.0f);
-    model = mat4(1.0f);
-    model = glm::translate(model, lightPosition);
-    setMatrices(textureProgram);
-    light.render();
-
-    textureProgram.use();
-    textureProgram.setUniform("Material.Kd", 0.5f, 0.5f, 0.5f);
-    textureProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-    textureProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
-    textureProgram.setUniform("Material.Shininess", 64.0f);
-    model = mat4(1.0f);
-    model = glm::translate(model, vec3(-40.0f, -10.0f, -40.0f));
-    setMatrices(textureProgram);
+    model = glm::translate(model, vec3(-30.0f, -40.0f, 0.0f));
+    setMatrices(ufoProgram);
     ufo->render();
 }
 
@@ -136,7 +118,7 @@ void SceneBasic_Uniform::setMatrices(GLSLProgram& prog)
     mat4 mv = view * model;
     prog.setUniform("MVP", projection * mv);
     prog.setUniform("ModelViewMatrix", mv);
-    prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2])));   
+    prog.setUniform("NormalMatrix", glm::mat3(vec3(mv[0]), vec3(mv[1]), vec3(mv[2])));
 }
 
 void SceneBasic_Uniform::resize(int w, int h)
@@ -144,5 +126,5 @@ void SceneBasic_Uniform::resize(int w, int h)
     glViewport(0, 0, w, h);
     width = w;
     height = h;
-    projection = glm::perspective(glm::radians(95.0f), (float)w / h, 0.3f, 100.0f);
+    projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
 }

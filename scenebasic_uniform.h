@@ -19,15 +19,12 @@ class SceneBasic_Uniform : public Scene
 {
 private:
     GLSLProgram skyboxProgram;
-    GLSLProgram textureProgram;
+    GLSLProgram ufoProgram;
     std::unique_ptr<ObjMesh> ufo;
     SkyBox sky;
-    Cube cube;
-    Cube light;
     float angle, tPrev, rotSpeed;
-    glm::vec3 lightPosition;
 
-    GLuint skyboxTex, cubeTex, ufoDiffuseTex, ufoNormalTex;
+    glm::vec3 lightPosition;
 
     void setMatrices(GLSLProgram& prog);
     void compile();
