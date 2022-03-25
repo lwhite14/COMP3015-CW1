@@ -163,10 +163,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="helper\aabb.h" />
+    <ClInclude Include="helper\camera.h" />
     <ClInclude Include="helper\cube.h" />
     <ClInclude Include="helper\drawable.h" />
     <ClInclude Include="helper\glslprogram.h" />
     <ClInclude Include="helper\glutils.h" />
+    <ClInclude Include="helper\motion.h" />
     <ClInclude Include="helper\objmesh.h" />
     <ClInclude Include="helper\plane.h" />
     <ClInclude Include="helper\random.h" />
