@@ -15,7 +15,7 @@ using glm::mat4;
 
 
 SceneBasic_Uniform::SceneBasic_Uniform() :  lightPosition(vec3(2.0, 2.0, -2.0)), 
-                                            sky(100.0f)
+                                            sky(250.0f)
 { 
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
 }
@@ -114,5 +114,5 @@ void SceneBasic_Uniform::resize(int w, int h)
     glViewport(0, 0, w, h);
     width = w;
     height = h;
-    projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 100.0f);
+    projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 500.0f);
 }

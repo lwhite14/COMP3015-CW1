@@ -13,7 +13,7 @@ public:
     int height;
     Camera camera;
 
-	Scene() : m_animate(true), width(1280), height(960), camera(width, height) { }
+	Scene() : m_animate(true), width(800), height(600), camera(width, height) { }
 	virtual ~Scene() {}
 
 	void setDimensions( int w, int h ) {
