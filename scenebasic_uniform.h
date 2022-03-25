@@ -27,6 +27,8 @@ private:
     float angle, tPrev, rotSpeed;
     glm::vec3 lightPosition;
 
+    GLuint skyboxTex, cubeTex, ufoDiffuseTex, ufoNormalTex;
+
     void setMatrices(GLSLProgram& prog);
     void compile();
 public:

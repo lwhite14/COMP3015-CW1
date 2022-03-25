@@ -33,8 +33,10 @@ void SceneBasic_Uniform::initScene()
 
     projection = mat4(1.0f);
 
-    GLuint skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
-    GLuint cubeTex = Texture::loadTexture("../COMP3015-CW1/media/texture/metal.jpg");
+    skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
+    cubeTex = Texture::loadTexture("../COMP3015-CW1/media/texture/metal.jpg");
+    ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
+    ufoNormalTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_normal.png");
 
     textureProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
     textureProgram.setUniform("Light.La", vec3(0.15f, 0.15f, 0.2f));
@@ -45,6 +47,10 @@ void SceneBasic_Uniform::initScene()
     glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, cubeTex);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, ufoDiffuseTex);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, ufoNormalTex);
 }
 
 void SceneBasic_Uniform::compile()
