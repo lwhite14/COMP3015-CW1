@@ -22,7 +22,6 @@ private:
     GLSLProgram ufoProgram;
     std::unique_ptr<ObjMesh> ufo;
     SkyBox sky;
-    float angle, tPrev, rotSpeed;
 
     glm::vec3 lightPosition;
 
@@ -32,7 +31,7 @@ public:
     SceneBasic_Uniform();
 
     void initScene();
-    void update(float t);
+    void update(float t, GLFWwindow* window);
     void render();
     void resize(int, int);
 };

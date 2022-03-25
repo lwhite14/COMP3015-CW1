@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "camera.h"
 
 class Scene
 {
@@ -10,8 +11,9 @@ protected:
 public:
     int width;
     int height;
+    Camera camera;
 
-	Scene() : m_animate(true), width(800), height(600) { }
+	Scene() : m_animate(true), width(1280), height(960), camera(width, height) { }
 	virtual ~Scene() {}
 
 	void setDimensions( int w, int h ) {
@@ -28,7 +30,7 @@ public:
       This is called prior to every frame.  Use this
       to update your animation.
       */
-    virtual void update( float t ) = 0;
+    virtual void update(float t, GLFWwindow* window) = 0;
 
     /**
       Draw your scene.

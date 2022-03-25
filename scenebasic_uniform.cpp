@@ -15,9 +15,6 @@ using glm::mat4;
 
 
 SceneBasic_Uniform::SceneBasic_Uniform() :  lightPosition(vec3(2.0, 2.0, -2.0)), 
-                                            angle(0.0f), 
-                                            tPrev(0.0f), 
-                                            rotSpeed(glm::pi<float>() / 4.0f),
                                             sky(100.0f)
 { 
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
@@ -51,7 +48,6 @@ void SceneBasic_Uniform::initScene()
     // Load texture file into channel 1
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, ufoNormalTex);
-
 }
 
 void SceneBasic_Uniform::compile()
@@ -75,27 +71,19 @@ void SceneBasic_Uniform::compile()
     }
 }
 
-void SceneBasic_Uniform::update(float t)
+void SceneBasic_Uniform::update(float t, GLFWwindow* window)
 {
-    float deltaT = t - tPrev;
-    if (tPrev == 0.0f)
-    {
-        deltaT = 0.0f;
-    }
-    tPrev = t;
-    angle += rotSpeed * deltaT;
-    if (angle > glm::two_pi<float>())
-    {
-        angle -= glm::two_pi<float>();
-    }
+    camera.UpdateDeltaTime();
+    camera.Movement();
+    camera.KeyCallback(window);
+    camera.MouseCallback(window);
 }
 
 void SceneBasic_Uniform::render()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    vec3 cameraPos = vec3(20.0f * cos(angle), 2.0f, 20.0f * sin(angle));
-    view = glm::lookAt(cameraPos, vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+    view = camera.ViewLookAt(view);
 
     skyboxProgram.use();
     model = mat4(1.0f);
