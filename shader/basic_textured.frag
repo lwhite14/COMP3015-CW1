@@ -28,7 +28,7 @@ vec3 blinnPhong( vec3 position, vec3 normal )
 {
 	vec3 texColor = texture(Tex1, TexCoord).rgb;
 
-	//Ambient
+	// Ambient
 	vec3 ambient = Material.Ka * Light.La * texColor;
 
 	// Diffuse

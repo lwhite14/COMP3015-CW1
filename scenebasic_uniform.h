@@ -15,7 +15,7 @@
 class SceneBasic_Uniform : public Scene
 {
 private:
-    GLSLProgram skyboxProgram, ufoProgram, basicProgram, basicTexturedProgram, spotlightProgram;
+    GLSLProgram skyboxProgram, ufoProgram, spotlightProgram;
     std::unique_ptr<ObjMesh> ufo, meteor;
     Light pointLight, spotLight;
     SkyBox sky;
