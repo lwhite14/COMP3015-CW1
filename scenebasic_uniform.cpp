@@ -19,6 +19,7 @@ SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(PointLight(vec4(2.0, 2.0,
                                             lightSource(0.5f)
 { 
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
+    meteor = ObjMesh::load("../COMP3015-CW1/media/meteor.obj");
 }
 
 
@@ -29,20 +30,10 @@ void SceneBasic_Uniform::initScene()
 
     projection = mat4(1.0f);
 
-    GLuint skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
-    GLuint ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
-    GLuint ufoNormalTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_normal.png");
-
-    // Load texture file into channel 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTex);
-
-    // Load texture file into channel 0
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, ufoDiffuseTex);
-    // Load texture file into channel 1
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, ufoNormalTex);
+    skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
+    ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
+    ufoNormalTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_normal.png");
+    rockTex = Texture::loadTexture("../COMP3015-CW1/media/texture/rock.jpg");
 }
 
 void SceneBasic_Uniform::compile()
@@ -52,17 +43,18 @@ void SceneBasic_Uniform::compile()
         skyboxProgram.compileShader("shader/skybox.vert");
         skyboxProgram.compileShader("shader/skybox.frag");
         skyboxProgram.link();
-        skyboxProgram.use();
 
         ufoProgram.compileShader("shader/normal_map.vert");
         ufoProgram.compileShader("shader/normal_map.frag");
         ufoProgram.link();
-        ufoProgram.use();
 
         basicProgram.compileShader("shader/basic.vert");
         basicProgram.compileShader("shader/basic.frag");
         basicProgram.link();
-        basicProgram.use();
+
+        basicTexturedProgram.compileShader("shader/basic_textured.vert");
+        basicTexturedProgram.compileShader("shader/basic_textured.frag");
+        basicTexturedProgram.link();
     }
     catch (GLSLProgramException& e)
     {
@@ -102,6 +94,8 @@ void SceneBasic_Uniform::render()
     model = mat4(1.0f);
     model = glm::translate(model, vec3(-30.0f, -40.0f, 0.0f));
     setMatrices(ufoProgram);
+    bindTex(GL_TEXTURE0, ufoDiffuseTex);
+    bindTex(GL_TEXTURE1, ufoNormalTex);
     ufo->render();
 
     basicProgram.use();
@@ -117,6 +111,21 @@ void SceneBasic_Uniform::render()
     model = glm::translate(model, vec3(pointLight.position.x, pointLight.position.y, pointLight.position.z));
     setMatrices(basicProgram);
     lightSource.render();
+
+    basicTexturedProgram.use();
+    basicTexturedProgram.setUniform("Light.Position", view * pointLight.position);
+    basicTexturedProgram.setUniform("Light.La", pointLight.ambient);
+    basicTexturedProgram.setUniform("Light.Ld", pointLight.diffuse);
+    basicTexturedProgram.setUniform("Light.Ls", pointLight.specular);
+    basicTexturedProgram.setUniform("Material.Kd", 0.5f, 0.5f, 0.5f);
+    basicTexturedProgram.setUniform("Material.Ks", 0.5f, 0.5f, 0.5f);
+    basicTexturedProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
+    basicTexturedProgram.setUniform("Material.Shininess", 128.0f);
+    model = mat4(1.0f);
+    model = glm::translate(model, vec3(30.0f, 40.0f, 0.0f));
+    setMatrices(basicTexturedProgram);
+    bindTex(GL_TEXTURE0, rockTex);
+    meteor->render();
 }
 
 void SceneBasic_Uniform::setMatrices(GLSLProgram& prog)
@@ -133,4 +142,10 @@ void SceneBasic_Uniform::resize(int w, int h)
     width = w;
     height = h;
     projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 500.0f);
+}
+
+void SceneBasic_Uniform::bindTex(GLuint unit, GLuint texture)
+{
+    glActiveTexture(unit);
+    glBindTexture(GL_TEXTURE_2D, texture);
 }
