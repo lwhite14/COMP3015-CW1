@@ -14,7 +14,14 @@ using glm::mat4;
 #include "helper/texture.h"
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(PointLight(vec4(0.0, 0.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.5, 0.5, 1.0), vec3(1.0, 1.0, 1.0))),
+SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(0.0, 0.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.5, 0.5, 1.0), vec3(1.0, 1.0, 1.0))),
+                                            spotLight(Light(vec4(-25.0f, 30.0f, 0.0f, 1.0f),
+                                                vec3(0.5f),
+                                                vec3(0.9f),
+                                                vec3(0.9f),
+                                                vec3(),
+                                                50.0f,
+                                                glm::radians(45.0f))),
                                             sky(250.0f),
                                             lightSource(0.5f)
 { 
@@ -55,6 +62,10 @@ void SceneBasic_Uniform::compile()
         basicTexturedProgram.compileShader("shader/basic_textured.vert");
         basicTexturedProgram.compileShader("shader/basic_textured.frag");
         basicTexturedProgram.link();
+
+        spotlightProgram.compileShader("shader/spotlight.vert");
+        spotlightProgram.compileShader("shader/spotlight.frag");
+        spotlightProgram.link();
     }
     catch (GLSLProgramException& e)
     {
@@ -100,31 +111,35 @@ void SceneBasic_Uniform::render()
     ufo->render();
 
     basicProgram.use();
-    ufoProgram.setUniform("Light.Position", view * pointLight.position);
-    ufoProgram.setUniform("Light.La", pointLight.ambient);
-    ufoProgram.setUniform("Light.Ld", pointLight.diffuse);
-    ufoProgram.setUniform("Light.Ls", pointLight.specular);
-    ufoProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
-    ufoProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-    ufoProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
-    ufoProgram.setUniform("Material.Shininess", 0.0f);
+    basicProgram.setUniform("Light.Position", view * pointLight.position);
+    basicProgram.setUniform("Light.La", pointLight.ambient);
+    basicProgram.setUniform("Light.Ld", pointLight.diffuse);
+    basicProgram.setUniform("Light.Ls", pointLight.specular);
+    basicProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
+    basicProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
+    basicProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
+    basicProgram.setUniform("Material.Shininess", 0.0f);
     model = mat4(1.0f);
     model = glm::translate(model, vec3(pointLight.position.x, pointLight.position.y, pointLight.position.z));
     setMatrices(basicProgram);
     lightSource.render();
 
-    basicTexturedProgram.use();
-    basicTexturedProgram.setUniform("Light.Position", view * pointLight.position);
-    basicTexturedProgram.setUniform("Light.La", pointLight.ambient);
-    basicTexturedProgram.setUniform("Light.Ld", pointLight.diffuse);
-    basicTexturedProgram.setUniform("Light.Ls", pointLight.specular);
-    basicTexturedProgram.setUniform("Material.Kd", 0.5f, 0.5f, 0.5f);
-    basicTexturedProgram.setUniform("Material.Ks", 0.5f, 0.5f, 0.5f);
-    basicTexturedProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
-    basicTexturedProgram.setUniform("Material.Shininess", 128.0f);
+    spotlightProgram.use();
+    spotlightProgram.setUniform("Spot.L", vec3(0.9f));
+    spotlightProgram.setUniform("Spot.La", vec3(0.5f));
+    spotlightProgram.setUniform("Spot.Exponent", 50.0f);
+    spotlightProgram.setUniform("Spot.Cutoff", glm::radians(15.0f));
+    mat3 normalMatrix = mat3(vec3(view[0]), vec3(view[1]), vec3(view[2]));
+    spotLight.direction = normalMatrix * vec3(-spotLight.position);
+    spotlightProgram.setUniform("Spot.Position", vec3(view * spotLight.position));
+    spotlightProgram.setUniform("Spot.Direction", spotLight.direction);
+    spotlightProgram.setUniform("Material.Kd", 0.5f, 0.5f, 0.5f);
+    spotlightProgram.setUniform("Material.Ks", 0.5f, 0.5f, 0.5f);
+    spotlightProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
+    spotlightProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
     model = glm::translate(model, vec3(30.0f, -40.0f, 0.0f));
-    setMatrices(basicTexturedProgram);
+    setMatrices(spotlightProgram);
     bindTex(GL_TEXTURE0, rockTex);
     meteor->render();
 }

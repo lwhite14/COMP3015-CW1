@@ -10,14 +10,14 @@
 #include <glm/glm.hpp>
 #include "helper/cube.h"
 #include "helper/skybox.h"
-#include "helper/pointlight.h"
+#include "helper/light.h"
 
 class SceneBasic_Uniform : public Scene
 {
 private:
-    GLSLProgram skyboxProgram, ufoProgram, basicProgram, basicTexturedProgram;
+    GLSLProgram skyboxProgram, ufoProgram, basicProgram, basicTexturedProgram, spotlightProgram;
     std::unique_ptr<ObjMesh> ufo, meteor;
-    PointLight pointLight;
+    Light pointLight, spotLight;
     SkyBox sky;
     Cube lightSource;
     GLuint skyboxTex, ufoDiffuseTex, ufoNormalTex, rockTex;
