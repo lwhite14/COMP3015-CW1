@@ -14,7 +14,7 @@ using glm::mat4;
 #include "helper/texture.h"
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(PointLight(vec4(2.0, 2.0, -2.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0))),
+SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(PointLight(vec4(0.0, 0.0, 0.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(0.5, 0.5, 1.0), vec3(1.0, 1.0, 1.0))),
                                             sky(250.0f),
                                             lightSource(0.5f)
 { 
@@ -92,7 +92,8 @@ void SceneBasic_Uniform::render()
     ufoProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
     ufoProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
-    model = glm::translate(model, vec3(-30.0f, -40.0f, 0.0f));
+    model = glm::rotate(model, 5.0f, vec3(0.0f, 1.0f, 0.0f));
+    model = glm::translate(model, vec3(0.0f, 20.0f, -25.0f));
     setMatrices(ufoProgram);
     bindTex(GL_TEXTURE0, ufoDiffuseTex);
     bindTex(GL_TEXTURE1, ufoNormalTex);
@@ -122,7 +123,7 @@ void SceneBasic_Uniform::render()
     basicTexturedProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
     basicTexturedProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
-    model = glm::translate(model, vec3(30.0f, 40.0f, 0.0f));
+    model = glm::translate(model, vec3(30.0f, -40.0f, 0.0f));
     setMatrices(basicTexturedProgram);
     bindTex(GL_TEXTURE0, rockTex);
     meteor->render();
