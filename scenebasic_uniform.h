@@ -6,14 +6,11 @@
 #include <glad/glad.h>
 #include "helper/glslprogram.h"
 
-#include "helper/plane.h"
 #include "helper/objmesh.h"
-#include "helper/teapot.h"
 #include <glm/glm.hpp>
 #include "helper/cube.h"
 #include "helper/skybox.h"
-#include "helper/torus.h"
-#include "helper/sphere.h"
+#include "helper/pointlight.h"
 
 class SceneBasic_Uniform : public Scene
 {
@@ -25,7 +22,7 @@ private:
     SkyBox sky;
     Cube lightSource;
 
-    glm::vec3 lightPosition;
+    PointLight pointLight;
 
     void setMatrices(GLSLProgram& prog);
     void compile();

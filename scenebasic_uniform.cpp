@@ -14,7 +14,7 @@ using glm::mat4;
 #include "helper/texture.h"
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() :  lightPosition(vec3(2.0, 2.0, -2.0)),
+SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(PointLight(vec4(2.0, 2.0, -2.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0))),
                                             sky(250.0f),
                                             lightSource(0.5f)
 { 
@@ -91,10 +91,10 @@ void SceneBasic_Uniform::render()
     sky.render();
 
     ufoProgram.use();
-    ufoProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
-    ufoProgram.setUniform("Light.La", vec3(0.4f, 0.4f, 0.45f));
-    ufoProgram.setUniform("Light.Ld", vec3(0.75f, 0.75f, 0.8f));
-    ufoProgram.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
+    ufoProgram.setUniform("Light.Position", view * pointLight.position);
+    ufoProgram.setUniform("Light.La", pointLight.ambient);
+    ufoProgram.setUniform("Light.Ld", pointLight.diffuse);
+    ufoProgram.setUniform("Light.Ls", pointLight.specular);
     ufoProgram.setUniform("Material.Kd", 0.5f, 0.5f, 0.5f);
     ufoProgram.setUniform("Material.Ks", 0.5f, 0.5f, 0.5f);
     ufoProgram.setUniform("Material.Ka", 0.5f, 0.5f, 0.5f);
@@ -105,16 +105,16 @@ void SceneBasic_Uniform::render()
     ufo->render();
 
     basicProgram.use();
-    ufoProgram.setUniform("Light.Position", view * vec4(lightPosition, 1.0f));
-    ufoProgram.setUniform("Light.La", vec3(0.4f, 0.4f, 0.45f));
-    ufoProgram.setUniform("Light.Ld", vec3(0.75f, 0.75f, 0.8f));
-    ufoProgram.setUniform("Light.Ls", vec3(1.0f, 1.0f, 1.0f));
+    ufoProgram.setUniform("Light.Position", view * pointLight.position);
+    ufoProgram.setUniform("Light.La", pointLight.ambient);
+    ufoProgram.setUniform("Light.Ld", pointLight.diffuse);
+    ufoProgram.setUniform("Light.Ls", pointLight.specular);
     ufoProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
     ufoProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
     ufoProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
     ufoProgram.setUniform("Material.Shininess", 0.0f);
     model = mat4(1.0f);
-    model = glm::translate(model, lightPosition);
+    model = glm::translate(model, vec3(pointLight.position.x, pointLight.position.y, pointLight.position.z));
     setMatrices(basicProgram);
     lightSource.render();
 }
