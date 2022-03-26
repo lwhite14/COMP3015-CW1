@@ -46,10 +46,7 @@ vec3 blinnPhong( vec3 position, vec3 normal )
 
 void main()
 {
-	// Unpack the normal and set it to a range between 0 and 1
-	vec3 norm = texture(NormalMapTex, TexCoord).xyz;
-	norm.xy = 2.0 * norm.xy - 1.0;
-
-	FragColor = vec4 ( blinnPhong(ViewDir, norm), 1.0f );
-
+    vec3 normal = texture(NormalMapTex, TexCoord).rgb;
+    normal = normalize(normal * 2.0 - 1.0); 
+	FragColor = vec4(blinnPhong(ViewDir, normal), 1.0);
 }
