@@ -14,17 +14,17 @@ using glm::mat4;
 #include "helper/texture.h"
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(0.0f, 100.0f, -50.0f, 1.0),
+SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(45.0f, -25.0f, 125.0f, 1.0),
                                                 vec3(0.25f, 0.25f, 0.5f),
                                                 vec3(1.0f))),
-                                            spotLight(Light(vec4(-25.0f, 30.0f, 0.0f, 1.0f),
+                                            spotLight(Light(vec4(-50.0f, 30.0f, 0.0f, 1.0f),
                                                 vec3(0.0f),
-                                                vec3(0.95f, 0.6f, 0.6f),
+                                                vec3(0.95f, 0.2f, 0.2f),
                                                 vec3(),
                                                 40.0f,
-                                                glm::radians(25.0f))),
+                                                glm::radians(20.0f))),
                                             sky(250.0f),
-                                            lightSource(1.0f)
+                                            lightSource(10.0f)
 {
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
     meteor = ObjMesh::load("../COMP3015-CW1/media/meteor.obj");
@@ -33,6 +33,19 @@ SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(0.0f, 100.0f, 
 
 void SceneBasic_Uniform::initScene()
 {
+    meteorPositions = std::vector<vec3>
+    {
+       vec3(30.0f, -40.0f, 0.0f),
+       vec3(-60.0f, -60.0f, -50.0f),
+       vec3(-60.0f, -60.0f, -50.0f)
+    };
+    meteorRotations = std::vector<float>
+    {
+        0.0f,
+        -0.5f,
+        1.0f
+    };
+
     compile();
     glEnable(GL_DEPTH_TEST);
 
@@ -94,9 +107,9 @@ void SceneBasic_Uniform::render()
     ufoProgram.setUniform("Light.Position", pointLight.position);
     ufoProgram.setUniform("Light.La", pointLight.ambient);
     ufoProgram.setUniform("Light.L", pointLight.diffSpec);
-    ufoProgram.setUniform("Material.Kd", vec3(1.0f));
-    ufoProgram.setUniform("Material.Ks", vec3(1.0f));
-    ufoProgram.setUniform("Material.Ka", vec3(1.0f));
+    ufoProgram.setUniform("Material.Kd", vec3(0.5f));
+    ufoProgram.setUniform("Material.Ks", vec3(0.5f));
+    ufoProgram.setUniform("Material.Ka", vec3(0.5f));
     ufoProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
     model = glm::rotate(model, 5.0f, vec3(0.0f, 1.0f, 0.0f));
@@ -115,18 +128,22 @@ void SceneBasic_Uniform::render()
     spotLight.direction = normalMatrix * vec3(-spotLight.position);
     spotlightProgram.setUniform("Spot.Position", view * spotLight.position);
     spotlightProgram.setUniform("Spot.Direction", spotLight.direction);
-    spotlightProgram.setUniform("Point.Position", view * pointLight.position);
+    spotlightProgram.setUniform("Point.Position", pointLight.position);
     spotlightProgram.setUniform("Point.La", pointLight.ambient);
     spotlightProgram.setUniform("Point.L", pointLight.diffSpec);
     spotlightProgram.setUniform("Material.Kd", vec3(0.5f));
     spotlightProgram.setUniform("Material.Ks", vec3(0.5f));
     spotlightProgram.setUniform("Material.Ka", vec3(0.5f, 0.5f, 0.65f));
-    spotlightProgram.setUniform("Material.Shininess", 128.0f);
-    model = mat4(1.0f);
-    model = glm::translate(model, vec3(30.0f, -40.0f, 0.0f));
-    setMatrices(spotlightProgram);
+    spotlightProgram.setUniform("Material.Shininess", 1024.0f);
     bindTex(GL_TEXTURE0, rockTex);
-    meteor->render();
+    for (unsigned int i = 0; i < meteorPositions.size(); i++) 
+    {
+        model = mat4(1.0f);
+        model = glm::rotate(model, meteorRotations[i], vec3(0.0f, 1.0f, 0.0f));
+        model = glm::translate(model, meteorPositions[i]);
+        setMatrices(spotlightProgram);
+        meteor->render();
+    }
 
 
     basic.use();

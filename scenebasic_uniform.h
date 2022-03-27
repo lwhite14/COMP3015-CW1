@@ -23,6 +23,8 @@ private:
 
     GLSLProgram basic;
     Cube lightSource;
+    std::vector<vec3> meteorPositions;
+    std::vector<float> meteorRotations;
 
     void setMatrices(GLSLProgram& prog);
     void compile();
