@@ -13,8 +13,7 @@ uniform struct LightInfo
 {
 	vec4 Position;	// Light position in eye coords.
 	vec3 La;		// Ambient light intensity
-	vec3 Ld;			// Specular light intensity
-	vec3 Ls;			// Diffuse light intensity
+	vec3 L;			// Specular light intensity
 } Light;
 
 uniform mat4 ModelViewMatrix;

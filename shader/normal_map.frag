@@ -11,8 +11,7 @@ uniform struct LightInfo
 {
 	vec4 Position;	// Light position in eye coords.
 	vec3 La;		// Ambient light intensity
-	vec3 Ld;			// Specular light intensity
-	vec3 Ls;			// Diffuse light intensity
+	vec3 L;			// Specular/Diffuse light intensity
 } Light;
 
 //material information struct
@@ -33,7 +32,7 @@ vec3 blinnPhong( vec3 position, vec3 normal )
 	vec3 ambient = Material.Ka * Light.La * texColor;
 	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
 	float sDotN = max( dot(s,normal), 0.0 );
-	vec3 diffuse = Material.Kd * Light.Ld * sDotN * texColor;
+	vec3 diffuse = Material.Kd * sDotN * Light.L * texColor;
 	vec3 spec = vec3(0.0);
 	if( sDotN > 0.0 )
 	{

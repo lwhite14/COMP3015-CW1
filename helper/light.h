@@ -10,8 +10,7 @@ class Light
 public:
 	vec4 position;
 	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	vec3 diffSpec;
 	
 	vec3 direction;
 	float exponent;
@@ -19,24 +18,22 @@ public:
 
 	Light() {}
 
-	Light(vec4 newPos, vec3 newAm, vec3 newDiff, vec3 newSpec) 
+	Light(vec4 newPos, vec3 newAm, vec3 newDiffSpec) 
 	{
 		position = newPos;
 		ambient = newAm;
-		diffuse = newDiff;
-		specular = newSpec;
+		diffSpec = newDiffSpec;
 
 		direction = vec3(0, 0, 0);
 		exponent = 0.0f;
 		cutoff = 0.0f;
 	}
 
-	Light(vec4 newPos, vec3 newAm, vec3 newDiff, vec3 newSpec, vec3 newDir, float newExp, float newCut)
+	Light(vec4 newPos, vec3 newAm, vec3 newDiffSpec, vec3 newDir, float newExp, float newCut)
 	{
 		position = newPos;
 		ambient = newAm;
-		diffuse = newDiff;
-		specular = newSpec;
+		diffSpec = newDiffSpec;
 		direction = newDir;
 		exponent = newExp;
 		cutoff = newCut;

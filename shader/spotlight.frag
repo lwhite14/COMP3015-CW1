@@ -76,7 +76,7 @@ vec3 blinnPhongPoint( vec3 position, vec3 n )
 		vec3 h = normalize( v + s ); 
 		spec = Material.Ks * pow( max( dot(h,n), 0.0 ), Material.Shininess );
 	}
-	return ambient * Spot.L * (diffuse + spec);
+	return ambient * Point.L * (diffuse + spec);
 }
 
 void main()
