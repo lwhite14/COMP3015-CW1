@@ -11,24 +11,37 @@
 #include "helper/cube.h"
 #include "helper/skybox.h"
 #include "helper/light.h"
+#include "helper/teapot.h"
 
 class SceneBasic_Uniform : public Scene
 {
 private:
-    GLSLProgram skyboxProgram, ufoProgram, spotlightProgram;
+    GLSLProgram skyboxProgram, ufoProgram, spotlightProgram, gaussianProgram;
     std::unique_ptr<ObjMesh> ufo, meteor;
     Light pointLight, spotLight;
     SkyBox sky;
     GLuint skyboxTex, ufoDiffuseTex, ufoNormalTex, rockTex;
+    Teapot teapot;
 
-    GLSLProgram basic;
-    Cube lightSource;
+    // Meteor properties
     std::vector<vec3> meteorPositions;
     std::vector<float> meteorRotations;
+
+    // For gaussian blur
+    GLuint fsQuad;
+    GLuint renderFBO, intermediateFBO;
+    GLuint renderTex, intermediateTex;
+    bool isBlur, firstBack; 
 
     void setMatrices(GLSLProgram& prog);
     void compile();
     void bindTex(GLuint unit, GLuint texture);
+    void setupFBO();
+    void pass1();
+    void pass2();
+    void pass3();
+    void initGauss();
+    float gauss(float, float);
 public:
     SceneBasic_Uniform();
 
