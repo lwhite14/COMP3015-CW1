@@ -15,9 +15,9 @@ using glm::mat4;
 
 
 SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(45.0f, -25.0f, 125.0f, 1.0),
-                                                vec3(0.25f, 0.25f, 0.5f),
+                                                vec3(0.1f, 0.1f, 0.25f),
                                                 vec3(1.0f))),
-                                            spotLight(Light(vec4(-50.0f, 30.0f, 0.0f, 1.0f),
+                                            spotLight(Light(vec4(0.0f, 30.0f, 0.0f, 1.0f),
                                                 vec3(0.0f),
                                                 vec3(0.95f, 0.2f, 0.2f),
                                                 vec3(),
@@ -35,9 +35,9 @@ void SceneBasic_Uniform::initScene()
 {
     meteorPositions = std::vector<vec3>
     {
-       vec3(30.0f, -40.0f, 0.0f),
-       vec3(-60.0f, -60.0f, -50.0f),
-       vec3(-60.0f, -60.0f, -50.0f)
+       vec3(0.0f, -40.0f, 0.0f),
+       vec3(-80.0f, -60.0f, -50.0f),
+       vec3(-80.0f, -60.0f, -50.0f)
     };
     meteorRotations = std::vector<float>
     {
@@ -109,11 +109,11 @@ void SceneBasic_Uniform::render()
     ufoProgram.setUniform("Light.L", pointLight.diffSpec);
     ufoProgram.setUniform("Material.Kd", vec3(0.5f));
     ufoProgram.setUniform("Material.Ks", vec3(0.5f));
-    ufoProgram.setUniform("Material.Ka", vec3(0.5f));
+    ufoProgram.setUniform("Material.Ka", vec3(0.25f, 0.25f, 1.0f));
     ufoProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
     model = glm::rotate(model, 5.0f, vec3(0.0f, 1.0f, 0.0f));
-    model = glm::translate(model, vec3(0.0f, 20.0f, -25.0f));
+    model = glm::translate(model, vec3(10.0f, 20.0f, 0.0f));
     setMatrices(ufoProgram);
     bindTex(GL_TEXTURE0, ufoDiffuseTex);
     bindTex(GL_TEXTURE1, ufoNormalTex);
@@ -146,14 +146,15 @@ void SceneBasic_Uniform::render()
     }
 
 
-    basic.use();
-    basic.setUniform("Color", vec3(1.0f, 0.0f, 0.0f));
-    model = mat4(1.0f);
-    vec4 newPos = pointLight.position;
-    model = glm::translate(model, vec3(newPos.x,newPos.y, newPos.z));
-    //model = glm::translate(model, vec3(0, 0, 0));
-    setMatrices(basic);
-    lightSource.render();
+    //basic.use();
+    //basic.setUniform("Color", vec3(1.0f, 0.0f, 0.0f));
+    //model = mat4(1.0f);
+    //vec4 newPos = spotLight.position;
+    ////model = glm::translate(model, vec3(newPos.x,newPos.y, newPos.z));
+    //model = glm::translate(model, vec3(newPos.x,newPos.y, newPos.z));
+    ////model = glm::translate(model, vec3(0, 0, 0));
+    //setMatrices(basic);
+    //lightSource.render();
 
 }
 
