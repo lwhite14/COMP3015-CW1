@@ -83,6 +83,6 @@ void main()
 {
 	vec3 Colour = vec3(0.0); 
 	Colour += blinnPhongPoint(Position, normalize(Normal)).xyz;
-//	Colour += blinnPhongSpot(Position, normalize(Normal)).xyz;
+	Colour += blinnPhongSpot(Position, normalize(Normal)).xyz;
 	FragColor = vec4(Colour, 1.0f);
 }

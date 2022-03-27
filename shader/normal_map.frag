@@ -29,10 +29,13 @@ layout(binding=1) uniform sampler2D NormalMapTex;
 vec3 blinnPhong( vec3 position, vec3 normal ) 
 {
 	vec3 texColor = texture(ColorTex, TexCoord).rgb;
+
 	vec3 ambient = Material.Ka * Light.La * texColor;
+
 	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
 	float sDotN = max( dot(s,normal), 0.0 );
 	vec3 diffuse = Material.Kd * sDotN * Light.L * texColor;
+
 	vec3 spec = vec3(0.0);
 	if( sDotN > 0.0 )
 	{
