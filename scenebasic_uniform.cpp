@@ -15,15 +15,15 @@ using glm::mat4;
 
 
 SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(45.0f, -25.0f, 125.0f, 1.0),
-                                                vec3(0.1f, 0.1f, 0.25f),
+                                                vec3(0.0f, 0.0f, 0.15f),
                                                 vec3(1.0f))),
                                             spotLight(Light(vec4(0.0f, 30.0f, 0.0f, 1.0f),
                                                 vec3(0.0f),
-                                                vec3(0.95f, 0.2f, 0.2f),
+                                                vec3(0.2f, 0.95f, 0.2f),
                                                 vec3(),
                                                 40.0f,
                                                 glm::radians(20.0f))),
-                                            sky(250.0f),
+                                            sky(500.0f),
                                             lightSource(10.0f)
 {
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
@@ -171,7 +171,7 @@ void SceneBasic_Uniform::resize(int w, int h)
     glViewport(0, 0, w, h);
     width = w;
     height = h;
-    projection = glm::perspective(glm::radians(70.0f), (float)w / h, 0.3f, 500.0f);
+    projection = glm::perspective(glm::radians(80.0f), (float)w / h, 0.3f, 1000.0f);
 }
 
 void SceneBasic_Uniform::bindTex(GLuint unit, GLuint texture)
