@@ -41,9 +41,12 @@ public:
 
 		motion = { false,false,false,false };
 
-		cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
-		cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-		cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		//cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
+		//cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+		//cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		cameraPos = glm::vec3(18.4363, 54.9233, 74.825);
+		cameraFront = glm::vec3(-0.44352, -0.557746, -0.701577);
+		cameraUp = glm::vec3(0.0, 1.0, 0.0);
 	}
 
 	void UpdateDeltaTime() 

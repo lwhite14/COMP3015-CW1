@@ -53,6 +53,10 @@ void SceneBasic_Uniform::initScene()
     initGauss();
 
     projection = mat4(1.0f);
+    view = mat4(1.0f);
+    camera.cameraPos = vec3(18.4363, 54.9233, 74.825);
+    camera.cameraFront = vec3(-0.44352, -0.557746, -0.701577);
+    camera.cameraUp = vec3(0.0, 1.0, 0.0);
 
     skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
     ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
@@ -89,12 +93,6 @@ void SceneBasic_Uniform::compile()
 
 void SceneBasic_Uniform::update(float t, GLFWwindow* window)
 {
-    //std::cout << camera.cameraPos.x << ", " << camera.cameraPos.y << ", " << camera.cameraPos.z << std::endl;
-    camera.UpdateDeltaTime();
-    camera.Movement();
-    camera.KeyCallback(window);
-    camera.MouseCallback(window);
-
     int blurState = glfwGetKey(window, GLFW_KEY_SPACE);
     if (blurState == GLFW_PRESS)
     {
@@ -116,10 +114,10 @@ void SceneBasic_Uniform::render()
 {
     if (!isBlur) 
     {
-        view = camera.ViewLookAt(view);
-
         glEnable(GL_DEPTH_TEST);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        view = camera.ViewLookAt(view);
 
         skyboxProgram.use();
         model = mat4(1.0f);
@@ -319,7 +317,7 @@ void SceneBasic_Uniform::pass1()
     glBindFramebuffer(GL_FRAMEBUFFER, renderFBO);
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    view = glm::lookAt(vec3(7.0f * cos(0.0f), 4.0f, 7.0f * sin(0.0f)), vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f));
+    view = camera.ViewLookAt(view);
     projection = glm::perspective(glm::radians(80.0f), (float)width / height, 0.3f, 1000.0f);
 
     // Render Objects
