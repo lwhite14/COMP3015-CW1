@@ -32,7 +32,7 @@ vec3 blinnPhong( vec3 position, vec3 normal )
 
 	vec3 ambient = Material.Ka * Light.La * texColor;
 
-	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0f)));
+	vec3 s = normalize(vec3(Light.Position - vec4(position, 1.0)));
 	float sDotN = max( dot(s,normal), 0.0 );
 	vec3 diffuse = Material.Kd * sDotN * Light.L * texColor;
 

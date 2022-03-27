@@ -19,7 +19,7 @@ SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(0.0f, 100.0f, 
                                                 vec3(1.0f))),
                                             spotLight(Light(vec4(-25.0f, 30.0f, 0.0f, 1.0f),
                                                 vec3(0.0f),
-                                                vec3(0.8f),
+                                                vec3(0.95f, 0.6f, 0.6f),
                                                 vec3(),
                                                 40.0f,
                                                 glm::radians(25.0f))),
@@ -94,9 +94,9 @@ void SceneBasic_Uniform::render()
     ufoProgram.setUniform("Light.Position", pointLight.position);
     ufoProgram.setUniform("Light.La", pointLight.ambient);
     ufoProgram.setUniform("Light.L", pointLight.diffSpec);
-    ufoProgram.setUniform("Material.Kd", vec3(0.5f));
-    ufoProgram.setUniform("Material.Ks", vec3(0.5f));
-    ufoProgram.setUniform("Material.Ka", vec3(0.5f));
+    ufoProgram.setUniform("Material.Kd", vec3(1.0f));
+    ufoProgram.setUniform("Material.Ks", vec3(1.0f));
+    ufoProgram.setUniform("Material.Ka", vec3(1.0f));
     ufoProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
     model = glm::rotate(model, 5.0f, vec3(0.0f, 1.0f, 0.0f));
@@ -120,7 +120,7 @@ void SceneBasic_Uniform::render()
     spotlightProgram.setUniform("Point.L", pointLight.diffSpec);
     spotlightProgram.setUniform("Material.Kd", vec3(0.5f));
     spotlightProgram.setUniform("Material.Ks", vec3(0.5f));
-    spotlightProgram.setUniform("Material.Ka", vec3(0.5f));
+    spotlightProgram.setUniform("Material.Ka", vec3(0.5f, 0.5f, 0.65f));
     spotlightProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
     model = glm::translate(model, vec3(30.0f, -40.0f, 0.0f));
