@@ -19,7 +19,7 @@ SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(-25.0, 150.0, 
                                                 vec3(1.0f),
                                                 vec3(0.0))),
                                             spotLight(Light(vec4(-25.0f, 30.0f, 0.0f, 1.0f),
-                                                vec3(0.0f, 0.0f, 0.1f),
+                                                vec3(0.0f, 0.0f, 0.0f),
                                                 vec3(0.9f),
                                                 vec3(0.9f),
                                                 vec3(),
@@ -106,15 +106,17 @@ void SceneBasic_Uniform::render()
     ufo->render();
 
     spotlightProgram.use();
-    spotlightProgram.setUniform("Spot.Ld", spotLight.diffuse);
-    spotlightProgram.setUniform("Spot.Ls", spotLight.specular);
+    spotlightProgram.setUniform("Spot.L", spotLight.diffuse);
     spotlightProgram.setUniform("Spot.La", spotLight.ambient);
     spotlightProgram.setUniform("Spot.Exponent", spotLight.exponent);
     spotlightProgram.setUniform("Spot.Cutoff", spotLight.cutoff);
     mat3 normalMatrix = mat3(vec3(view[0]), vec3(view[1]), vec3(view[2]));
     spotLight.direction = normalMatrix * vec3(-spotLight.position);
-    spotlightProgram.setUniform("Spot.Position", vec3(view * spotLight.position));
+    spotlightProgram.setUniform("Spot.Position", view * spotLight.position);
     spotlightProgram.setUniform("Spot.Direction", spotLight.direction);
+    spotlightProgram.setUniform("Point.Position", view * pointLight.position);
+    spotlightProgram.setUniform("Point.La", pointLight.ambient);
+    spotlightProgram.setUniform("Point.L", pointLight.diffuse);
     spotlightProgram.setUniform("Material.Kd", vec3(0.5f));
     spotlightProgram.setUniform("Material.Ks", vec3(0.5f));
     spotlightProgram.setUniform("Material.Ka", vec3(0.5f));
