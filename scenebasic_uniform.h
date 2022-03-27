@@ -19,8 +19,10 @@ private:
     std::unique_ptr<ObjMesh> ufo, meteor;
     Light pointLight, spotLight;
     SkyBox sky;
-    Cube lightSource;
     GLuint skyboxTex, ufoDiffuseTex, ufoNormalTex, rockTex;
+
+    GLSLProgram basic;
+    Cube lightSource;
 
     void setMatrices(GLSLProgram& prog);
     void compile();

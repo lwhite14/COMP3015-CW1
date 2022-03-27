@@ -14,17 +14,17 @@ using glm::mat4;
 #include "helper/texture.h"
 
 
-SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(-25.0, 150.0, 0.0, 1.0),
-                                                vec3(0.15f, 0.15f, 0.25f),
-                                                vec3(0.8f))),
+SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(0.0f, 100.0f, -50.0f, 1.0),
+                                                vec3(0.25f, 0.25f, 0.5f),
+                                                vec3(1.0f))),
                                             spotLight(Light(vec4(-25.0f, 30.0f, 0.0f, 1.0f),
-                                                vec3(0.25f, 0.25f, 0.25f),
+                                                vec3(0.1f, 0.1f, 0.15f),
                                                 vec3(0.8f),
                                                 vec3(),
                                                 40.0f,
                                                 glm::radians(25.0f))),
                                             sky(250.0f),
-                                            lightSource(0.5f)
+                                            lightSource(1.0f)
 {
     ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
     meteor = ObjMesh::load("../COMP3015-CW1/media/meteor.obj");
@@ -59,6 +59,10 @@ void SceneBasic_Uniform::compile()
         spotlightProgram.compileShader("shader/spotlight.vert");
         spotlightProgram.compileShader("shader/spotlight.frag");
         spotlightProgram.link();
+
+        basic.compileShader("shader/basic.vert");
+        basic.compileShader("shader/basic.frag");
+        basic.link();
     }
     catch (GLSLProgramException& e)
     {
@@ -87,7 +91,7 @@ void SceneBasic_Uniform::render()
     sky.render();
 
     ufoProgram.use();
-    ufoProgram.setUniform("Light.Position", view * pointLight.position);
+    ufoProgram.setUniform("Light.Position", pointLight.position);
     ufoProgram.setUniform("Light.La", pointLight.ambient);
     ufoProgram.setUniform("Light.L", pointLight.diffSpec);
     ufoProgram.setUniform("Material.Kd", vec3(0.5f));
@@ -123,6 +127,17 @@ void SceneBasic_Uniform::render()
     setMatrices(spotlightProgram);
     bindTex(GL_TEXTURE0, rockTex);
     meteor->render();
+
+
+    basic.use();
+    basic.setUniform("Color", vec3(1.0f, 0.0f, 0.0f));
+    model = mat4(1.0f);
+    vec4 newPos = pointLight.position;
+    model = glm::translate(model, vec3(newPos.x,newPos.y, newPos.z));
+    //model = glm::translate(model, vec3(0, 0, 0));
+    setMatrices(basic);
+    lightSource.render();
+
 }
 
 void SceneBasic_Uniform::setMatrices(GLSLProgram& prog)
