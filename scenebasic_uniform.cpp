@@ -72,17 +72,21 @@ void SceneBasic_Uniform::compile()
         skyboxProgram.compileShader("shader/skybox.frag");
         skyboxProgram.link();
 
-        ufoProgram.compileShader("shader/normal_map.vert");
-        ufoProgram.compileShader("shader/normal_map.frag");
-        ufoProgram.link();
+        normalProgram.compileShader("shader/normal_map.vert");
+        normalProgram.compileShader("shader/normal_map.frag");
+        normalProgram.link();
 
         spotlightProgram.compileShader("shader/spotlight.vert");
         spotlightProgram.compileShader("shader/spotlight.frag");
         spotlightProgram.link();
 
-        gaussianProgram.compileShader("shader/gaussian_blur.vert");
-        gaussianProgram.compileShader("shader/gaussian_blur.frag");
-        gaussianProgram.link();
+        normalGaussianProgram.compileShader("shader/normal_map.vert");
+        normalGaussianProgram.compileShader("shader/normal_map_gaussian.frag");
+        normalGaussianProgram.link();
+
+        spotlightGaussianProgram.compileShader("shader/spotlight.vert");
+        spotlightGaussianProgram.compileShader("shader/spotlight_gaussian.frag");
+        spotlightGaussianProgram.link();
     }
     catch (GLSLProgramException& e)
     {
@@ -119,27 +123,30 @@ void SceneBasic_Uniform::render()
 
         view = camera.ViewLookAt(view);
 
+        // Skybox
         skyboxProgram.use();
         model = mat4(1.0f);
         setMatrices(skyboxProgram);
         sky.render();
 
-        ufoProgram.use();
-        ufoProgram.setUniform("Light.Position", pointLight.position);
-        ufoProgram.setUniform("Light.La", pointLight.ambient);
-        ufoProgram.setUniform("Light.L", pointLight.diffSpec);
-        ufoProgram.setUniform("Material.Kd", vec3(0.5f));
-        ufoProgram.setUniform("Material.Ks", vec3(0.5f));
-        ufoProgram.setUniform("Material.Ka", vec3(0.25f, 0.25f, 1.0f));
-        ufoProgram.setUniform("Material.Shininess", 128.0f);
+        // UFO
+        normalProgram.use();
+        normalProgram.setUniform("Light.Position", pointLight.position);
+        normalProgram.setUniform("Light.La", pointLight.ambient);
+        normalProgram.setUniform("Light.L", pointLight.diffSpec);
+        normalProgram.setUniform("Material.Kd", vec3(0.5f));
+        normalProgram.setUniform("Material.Ks", vec3(0.5f));
+        normalProgram.setUniform("Material.Ka", vec3(0.25f, 0.25f, 1.0f));
+        normalProgram.setUniform("Material.Shininess", 128.0f);
         model = mat4(1.0f);
         model = glm::rotate(model, 5.0f, vec3(0.0f, 1.0f, 0.0f));
         model = glm::translate(model, vec3(5.0f, 20.0f, 0.0f));
-        setMatrices(ufoProgram);
+        setMatrices(normalProgram);
         bindTex(GL_TEXTURE0, ufoDiffuseTex);
         bindTex(GL_TEXTURE1, ufoNormalTex);
         ufo->render();
 
+        // Meteors
         spotlightProgram.use();
         spotlightProgram.setUniform("Spot.L", spotLight.diffSpec);
         spotlightProgram.setUniform("Spot.La", spotLight.ambient);
@@ -166,6 +173,7 @@ void SceneBasic_Uniform::render()
             meteor->render();
         }
 
+        // Teapot
         spotlightProgram.setUniform("Light.L", pointLight.diffSpec);
         spotlightProgram.setUniform("Light.La", pointLight.ambient);
         spotlightProgram.setUniform("Light.Position", pointLight.position);
@@ -181,7 +189,6 @@ void SceneBasic_Uniform::render()
     }
     else if (isBlur)
     {
-        gaussianProgram.use();
         pass1();
         pass2();
         pass3();
@@ -255,13 +262,15 @@ void SceneBasic_Uniform::initGauss()
     }
 
     // Normalize the weights and set the uniform
-    gaussianProgram.use();
     for (int i = 0; i < 5; i++)
     {
         std::stringstream uniName;
         uniName << "Weight[" << i << "]";
         float val = weights[i] / sum;
-        gaussianProgram.setUniform(uniName.str().c_str(), val);
+        normalGaussianProgram.use();
+        normalGaussianProgram.setUniform(uniName.str().c_str(), val);
+        spotlightGaussianProgram.use();
+        spotlightGaussianProgram.setUniform(uniName.str().c_str(), val);
     }
 }
 
@@ -313,55 +322,89 @@ void SceneBasic_Uniform::setupFBO()
 
 void SceneBasic_Uniform::pass1()
 {
-    gaussianProgram.setUniform("Pass", 1);
+    normalGaussianProgram.use();
+    normalGaussianProgram.setUniform("Pass", 1);
+    spotlightGaussianProgram.use();
+    spotlightGaussianProgram.setUniform("Pass", 1);
     glBindFramebuffer(GL_FRAMEBUFFER, renderFBO);
     glEnable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     view = camera.ViewLookAt(view);
     projection = glm::perspective(glm::radians(80.0f), (float)width / height, 0.3f, 1000.0f);
 
+    // Skybox
+    skyboxProgram.use();
+    model = mat4(1.0f);
+    setMatrices(skyboxProgram);
+    sky.render();
+
     // Render Objects
-    gaussianProgram.setUniform("Light.L", pointLight.diffSpec);
-    gaussianProgram.setUniform("Light.La", pointLight.ambient);
-    gaussianProgram.setUniform("Light.Position", pointLight.position);
-    gaussianProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
-    gaussianProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-    gaussianProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
-    gaussianProgram.setUniform("Material.Shininess", 128.0f);
+    // UFO
+    normalGaussianProgram.use();
+    normalGaussianProgram.setUniform("Light.Position", pointLight.position);
+    normalGaussianProgram.setUniform("Light.La", pointLight.ambient);
+    normalGaussianProgram.setUniform("Light.L", pointLight.diffSpec);
+    normalGaussianProgram.setUniform("Material.Kd", vec3(0.5f));
+    normalGaussianProgram.setUniform("Material.Ks", vec3(0.5f));
+    normalGaussianProgram.setUniform("Material.Ka", vec3(0.25f, 0.25f, 1.0f));
+    normalGaussianProgram.setUniform("Material.Shininess", 128.0f);
     model = mat4(1.0f);
     model = glm::rotate(model, 5.0f, vec3(0.0f, 1.0f, 0.0f));
     model = glm::translate(model, vec3(5.0f, 20.0f, 0.0f));
-    setMatrices(gaussianProgram);
+    setMatrices(normalGaussianProgram);
+    bindTex(GL_TEXTURE1, ufoDiffuseTex);
+    bindTex(GL_TEXTURE2, ufoNormalTex);
     ufo->render();
 
+    // Meteors
+    spotlightGaussianProgram.use();
+    spotlightGaussianProgram.setUniform("Spot.L", spotLight.diffSpec);
+    spotlightGaussianProgram.setUniform("Spot.La", spotLight.ambient);
+    spotlightGaussianProgram.setUniform("Spot.Exponent", spotLight.exponent);
+    spotlightGaussianProgram.setUniform("Spot.Cutoff", spotLight.cutoff);
+    mat3 normalMatrix = mat3(vec3(view[0]), vec3(view[1]), vec3(view[2]));
+    spotLight.direction = normalMatrix * vec3(-spotLight.position);
+    spotlightGaussianProgram.setUniform("Spot.Position", view * spotLight.position);
+    spotlightGaussianProgram.setUniform("Spot.Direction", spotLight.direction);
+    spotlightGaussianProgram.setUniform("Point.Position", pointLight.position);
+    spotlightGaussianProgram.setUniform("Point.La", pointLight.ambient);
+    spotlightGaussianProgram.setUniform("Point.L", pointLight.diffSpec);
+    spotlightGaussianProgram.setUniform("Material.Kd", vec3(0.5f));
+    spotlightGaussianProgram.setUniform("Material.Ks", vec3(0.5f));
+    spotlightGaussianProgram.setUniform("Material.Ka", vec3(0.5f, 0.5f, 0.65f));
+    spotlightGaussianProgram.setUniform("Material.Shininess", 1024.0f);
+    bindTex(GL_TEXTURE1, rockTex);
     for (unsigned int i = 0; i < meteorPositions.size(); i++)
     {
         model = mat4(1.0f);
         model = glm::rotate(model, meteorRotations[i], vec3(0.0f, 1.0f, 0.0f));
         model = glm::translate(model, meteorPositions[i]);
-        setMatrices(gaussianProgram);
+        setMatrices(spotlightGaussianProgram);
         meteor->render();
     }
 
-
     // Teapot
-    gaussianProgram.setUniform("Light.L", pointLight.diffSpec);
-    gaussianProgram.setUniform("Light.La", pointLight.ambient);
-    gaussianProgram.setUniform("Light.Position", pointLight.position);
-    gaussianProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
-    gaussianProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
-    gaussianProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
-    gaussianProgram.setUniform("Material.Shininess", 100.0f);
+    spotlightGaussianProgram.setUniform("Light.L", pointLight.diffSpec);
+    spotlightGaussianProgram.setUniform("Light.La", pointLight.ambient);
+    spotlightGaussianProgram.setUniform("Light.Position", pointLight.position);
+    spotlightGaussianProgram.setUniform("Material.Kd", 1.0f, 1.0f, 1.0f);
+    spotlightGaussianProgram.setUniform("Material.Ks", 1.0f, 1.0f, 1.0f);
+    spotlightGaussianProgram.setUniform("Material.Ka", 1.0f, 1.0f, 1.0f);
+    spotlightGaussianProgram.setUniform("Material.Shininess", 100.0f);
+    bindTex(GL_TEXTURE1, rockTex);
     model = mat4(1.0f);
     model = glm::translate(model, vec3(0.0f, -11.25f, 0.0f));
     model = glm::rotate(model, glm::radians(-90.0f), vec3(1.0f, 0.0f, 0.0f));
-    setMatrices(gaussianProgram);
+    setMatrices(spotlightGaussianProgram);
     teapot.render();
 }
 
 void SceneBasic_Uniform::pass2()
 {
-    gaussianProgram.setUniform("Pass", 2);
+    normalGaussianProgram.use();
+    normalGaussianProgram.setUniform("Pass", 2);    
+    spotlightGaussianProgram.use();
+    spotlightGaussianProgram.setUniform("Pass", 2);
     glBindFramebuffer(GL_FRAMEBUFFER, intermediateFBO);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, renderTex);
@@ -370,7 +413,10 @@ void SceneBasic_Uniform::pass2()
     model = mat4(1.0f);
     view = mat4(1.0f);
     projection = mat4(1.0f);
-    setMatrices(gaussianProgram);
+    normalGaussianProgram.use();
+    setMatrices(normalGaussianProgram);
+    spotlightGaussianProgram.use();
+    setMatrices(spotlightGaussianProgram);
     // Render the full-screen quad
     glBindVertexArray(fsQuad);
     glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -378,7 +424,10 @@ void SceneBasic_Uniform::pass2()
 
 void SceneBasic_Uniform::pass3()
 {
-    gaussianProgram.setUniform("Pass", 3);
+    normalGaussianProgram.use();
+    normalGaussianProgram.setUniform("Pass", 3);
+    spotlightGaussianProgram.use();
+    spotlightGaussianProgram.setUniform("Pass", 3);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, intermediateTex);
@@ -386,7 +435,10 @@ void SceneBasic_Uniform::pass3()
     model = mat4(1.0f);
     view = mat4(1.0f);
     projection = mat4(1.0f);
-    setMatrices(gaussianProgram);
+    normalGaussianProgram.use();
+    setMatrices(normalGaussianProgram);
+    spotlightGaussianProgram.use();
+    setMatrices(spotlightGaussianProgram);
     // Render the full-screen quad
     glBindVertexArray(fsQuad);
     glDrawArrays(GL_TRIANGLES, 0, 6);
