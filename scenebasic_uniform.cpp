@@ -97,6 +97,11 @@ void SceneBasic_Uniform::compile()
 
 void SceneBasic_Uniform::update(float t, GLFWwindow* window)
 {
+    camera.UpdateDeltaTime();
+    camera.Movement();
+    camera.KeyCallback(window);
+    camera.MouseCallback(window);
+
     int blurState = glfwGetKey(window, GLFW_KEY_SPACE);
     if (blurState == GLFW_PRESS)
     {
