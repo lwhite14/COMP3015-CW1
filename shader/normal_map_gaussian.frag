@@ -10,9 +10,9 @@ uniform float EdgeThreshold;
 uniform int Pass;
 uniform float Weight[5];
 
-layout(binding=0) uniform sampler2D Texture0;
-layout(binding=1) uniform sampler2D ColorTex;
-layout(binding=2) uniform sampler2D NormalMapTex;
+layout(binding=0) uniform sampler2D Texture0;		// Render texture
+layout(binding=1) uniform sampler2D ColorTex;		// Diffuse texture
+layout(binding=2) uniform sampler2D NormalMapTex;	// Normal map texture
 
 //light information struct
 uniform struct LightInfo 
@@ -63,7 +63,7 @@ vec4 pass1()
 	vec3 normal = texture(NormalMapTex, TexCoord).rgb;
     normal = normalize(normal * 2.0 - 1.0); 
 	return vec4(blinnPhong(ViewDir, normal), 1.0);
-}
+} // Texture/shade the object like normal. 
 
 vec4 pass2()
 {
@@ -78,7 +78,7 @@ vec4 pass2()
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(0,4) ) * Weight[4];
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(0,-4) ) * Weight[4];
 	return sum;
-}
+} // Pixels in the y
 
 vec4 pass3()
 {
@@ -93,7 +93,7 @@ vec4 pass3()
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(4,0) ) * Weight[4];
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(-4,0) ) * Weight[4];
 	return sum;
-}
+} // Pixels in the x
 
 void main()
 {

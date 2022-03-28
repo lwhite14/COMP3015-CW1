@@ -10,4 +10,4 @@ void main()
 {
 	vec3 texColor = texture(SkyBoxTex, normalize(Vec)).rgb;
 	FragColor = vec4 ( texColor, 1.0 );
-}
+}	// Takes input texture and applies it to box (skybox).

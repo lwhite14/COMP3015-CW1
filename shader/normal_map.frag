@@ -23,8 +23,8 @@ uniform struct MaterialInfo
 	float Shininess;	// Specular shininess factor
 } Material;
 
-layout(binding=0) uniform sampler2D ColorTex;
-layout(binding=1) uniform sampler2D NormalMapTex;
+layout(binding=0) uniform sampler2D ColorTex;		// Diffuse texture
+layout(binding=1) uniform sampler2D NormalMapTex;	// Normal map texture
 
 vec3 blinnPhong( vec3 position, vec3 normal ) 
 {
@@ -44,11 +44,11 @@ vec3 blinnPhong( vec3 position, vec3 normal )
 		spec = Material.Ks * pow( max( dot(h,normal), 0.0 ), Material.Shininess );
 	}
 	return ambient + diffuse + spec;
-}
+} // Normal blinnPhong used to calculate lighting for fragment.
 
 void main()
 {
     vec3 normal = texture(NormalMapTex, TexCoord).rgb;
     normal = normalize(normal * 2.0 - 1.0); 
 	FragColor = vec4(blinnPhong(ViewDir, normal), 1.0);
-}
+} // Apply texture with normal map used as normal for blinnPhong.

@@ -6,19 +6,19 @@ in vec2 TexCoord;
 
 uniform struct SpotLightInfo 
 {
-	vec4 Position; // Position in cam coords
-	vec3 La; // Ambient intensity
-	vec3 L; // Diffuse/Specular intensity
+	vec4 Position;	// Position in cam coords
+	vec3 La;		// Ambient intensity
+	vec3 L;			// Diffuse/Specular intensity
 	vec3 Direction; // Direction of the spotlight in cam coords.
 	float Exponent; // Angular attenuation exponent
-	float Cutoff; // Cutoff angle (between 0 and pi/2)
+	float Cutoff;	// Cutoff angle (between 0 and pi/2)
 } Spot;
 
 uniform struct PointLightInfo
 {
-	vec4 Position; // Position in cam coords
-	vec3 La; // Ambient intensity
-	vec3 L; // Diffuse/Specular intensity
+	vec4 Position;	// Position in cam coords
+	vec3 La;		// Ambient intensity
+	vec3 L;			// Diffuse/Specular intensity
 } Point;
 
 uniform struct MaterialInfo 
@@ -49,8 +49,8 @@ vec3 blinnPhongSpot( vec3 position, vec3 n )
 {
 	vec3 ambient = Material.Ka * Spot.La; 
 	vec3 s = normalize(vec3(Spot.Position - vec4(position, 1.0f)));
-	float cosAng = dot(-s, normalize(Spot.Direction)); //cosine of the angle
-	float angle = acos( cosAng ); //gives you the actual angle
+	float cosAng = dot(-s, normalize(Spot.Direction));
+	float angle = acos( cosAng );
 	float spotScale = 0.0;
 	vec3 diffuse = vec3(0.0);
 	vec3 spec = vec3(0.0);
@@ -66,7 +66,6 @@ vec3 blinnPhongSpot( vec3 position, vec3 n )
 			spec = Material.Ks * pow( max( dot(h,n), 0.0 ), Material.Shininess );
 		}
 	}
-//	return ambient + spotScale * Spot.L * (diffuse + spec);
 	return ambient + diffuse + spec;
 }
 
@@ -96,7 +95,7 @@ vec4 pass1()
 	Colour += blinnPhongPoint(Position, normalize(Normal)).xyz;
 	Colour += blinnPhongSpot(Position, normalize(Normal)).xyz;
 	return vec4(Colour, 1.0f);
-}
+} // Texture/shade the object like normal. 
 
 vec4 pass2()
 {
@@ -111,7 +110,7 @@ vec4 pass2()
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(0,4) ) * Weight[4];
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(0,-4) ) * Weight[4];
 	return sum;
-}
+} // Pixels in the y
 
 vec4 pass3()
 {
@@ -126,7 +125,7 @@ vec4 pass3()
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(4,0) ) * Weight[4];
 	sum += texelFetchOffset( Texture0, pix, 0, ivec2(-4,0) ) * Weight[4];
 	return sum;
-}
+} // Pixels in the x
 
 void main()
 {

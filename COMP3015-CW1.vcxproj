@@ -188,12 +188,6 @@
     <ClInclude Include="scenebasic_uniform.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\basic.frag" />
-    <None Include="shader\basic.vert" />
-    <None Include="shader\basic_lit.frag" />
-    <None Include="shader\basic_lit.vert" />
-    <None Include="shader\basic_textured.frag" />
-    <None Include="shader\basic_textured.vert" />
     <None Include="shader\normal_map_gaussian.frag" />
     <None Include="shader\normal_map.frag" />
     <None Include="shader\normal_map.vert" />

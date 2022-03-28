@@ -6,19 +6,19 @@ in vec2 TexCoord;
 
 uniform struct SpotLightInfo 
 {
-	vec4 Position; // Position in cam coords
-	vec3 La; // Ambient intensity
-	vec3 L; // Diffuse/Specular intensity
+	vec4 Position;	// Position in cam coords
+	vec3 La;		// Ambient intensity
+	vec3 L;			// Diffuse/Specular intensity
 	vec3 Direction; // Direction of the spotlight in cam coords.
 	float Exponent; // Angular attenuation exponent
-	float Cutoff; // Cutoff angle (between 0 and pi/2)
+	float Cutoff;	// Cutoff angle (between 0 and pi/2)
 } Spot;
 
 uniform struct PointLightInfo
 {
-	vec4 Position; // Position in cam coords
-	vec3 La; // Ambient intensity
-	vec3 L; // Diffuse/Specular intensity
+	vec4 Position;	// Position in cam coords
+	vec3 La;		// Ambient intensity
+	vec3 L;			// Diffuse/Specular intensity
 } Point;
 
 uniform struct MaterialInfo 
@@ -43,7 +43,7 @@ vec3 blinnPhongSpot( vec3 position, vec3 n )
 	float spotScale = 0.0;
 	vec3 diffuse = vec3(0.0);
 	vec3 spec = vec3(0.0);
-	if(angle < Spot.Cutoff )
+	if(angle < Spot.Cutoff ) // If the angle between spot and fragment is below the target angle, apply diffuse/specular lighting
 	{
 		spotScale = pow( cosAng, Spot.Exponent );
 		float sDotN = max( dot(s,n), 0.0 );
@@ -53,9 +53,8 @@ vec3 blinnPhongSpot( vec3 position, vec3 n )
 			vec3 v = normalize(-position.xyz);
 			vec3 h = normalize( v + s ); 
 			spec = Material.Ks * pow( max( dot(h,n), 0.0 ), Material.Shininess );
-		}
+		} 
 	}
-//	return ambient + spotScale * Spot.L * (diffuse + spec);
 	return ambient + diffuse + spec;
 }
 

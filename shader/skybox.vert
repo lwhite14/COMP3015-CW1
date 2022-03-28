@@ -10,4 +10,4 @@ void main()
 {
 	Vec = VertexPosition;
 	gl_Position = MVP * vec4(VertexPosition, 1.0);
-}
+} // Passes vertex position and sets gl_Position.
