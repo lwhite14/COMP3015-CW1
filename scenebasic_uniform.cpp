@@ -28,8 +28,8 @@ SceneBasic_Uniform::SceneBasic_Uniform() :  pointLight(Light(vec4(45.0f, -25.0f,
                                             firstBack(false),
                                             teapot(14, mat4(1.0f))
 {
-    ufo = ObjMesh::load("../COMP3015-CW1/media/ufo.obj");
-    meteor = ObjMesh::load("../COMP3015-CW1/media/meteor.obj");
+    ufo = ObjMesh::load("media/ufo.obj");
+    meteor = ObjMesh::load("media/meteor.obj");
 }
 
 
@@ -58,10 +58,10 @@ void SceneBasic_Uniform::initScene()
     camera.cameraFront = vec3(-0.44352, -0.557746, -0.701577);
     camera.cameraUp = vec3(0.0, 1.0, 0.0);
 
-    skyboxTex = Texture::loadCubeMap("../COMP3015-CW1/media/texture/nova/nova");
-    ufoDiffuseTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_diffuse.png");
-    ufoNormalTex = Texture::loadTexture("../COMP3015-CW1/media/texture/ufo_normal.png");
-    rockTex = Texture::loadTexture("../COMP3015-CW1/media/texture/rock.jpg");
+    skyboxTex = Texture::loadCubeMap("media/texture/nova/nova");
+    ufoDiffuseTex = Texture::loadTexture("media/texture/ufo_diffuse.png");
+    ufoNormalTex = Texture::loadTexture("media/texture/ufo_normal.png");
+    rockTex = Texture::loadTexture("media/texture/rock.jpg");
 }
 
 void SceneBasic_Uniform::compile()
